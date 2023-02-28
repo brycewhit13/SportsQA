@@ -1,7 +1,7 @@
 ####################################################################
 # Filename: load_data.py                                           #
 # Author: Bryce Whitney                                            #
-# Last Edit: 2/21/2023                                             #
+# Last Edit: 2/27/2023                                             #
 #                                                                  #
 # Description: This script loads the data from the raw_data folder #
 # or scrapes it from the web and saves it to the text_data folder. #
