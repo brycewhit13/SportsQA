@@ -1,7 +1,7 @@
 ####################################################################
 # Filename: text_preprocessing.py                                  #
 # Author: Bryce Whitney                                            #
-# Last Edit: 2/27/2023                                             #
+# Last Edit: 3/6/2023                                              #
 #                                                                  #
 # Description: This script performs text preprocessing on the data #
 # and stores the results in the processed_data folder that can be  #
@@ -13,15 +13,12 @@ import os
 import string
 import nltk
 from nltk.corpus import stopwords
-
-# Constants
-TEXT_DATA_FOLDER_PATH = "../data/text_data"
-PROCESSED_DATA_FOLDER_PATH = "../data/processed_data"
+from constants import TEXT_DATA_FOLDER_PATH, PROCESSED_DATA_FOLDER_PATH, STOPWORDS_SET
 
 #############
 # Functions #
 #############
-def process_text(data_file, output_file):
+def process_text(data_file, output_file, remove_stopwords=False, remove_punctuation=False):
     """Processes the text data from the text_data folder and stores the results in the processed_data folder.
 
     Args:
@@ -29,40 +26,65 @@ def process_text(data_file, output_file):
         output_file (str): The file name to store the processed data
     """
     # Read in the data
-    data = _read_text_data(data_file)
+    data = load_text_data(data_file)
     
     # Make everything lowercase
     data_processed = data.lower()
     # Replace non alphanumeric characters with empty strings
     data_processed = data_processed.replace("[^a-zA-Z0-9_]", "")
-    # Remove Stopwords and Punctuation
-    try:
-        stopwords_set = set(stopwords.words("english"))
-    except:
-        nltk.download('stopwords')
-        stopwords_set = set(stopwords.words("english"))
-    
-    data_processed = " ".join([word for word in data_processed.split() if word not in stopwords_set and word not in string.punctuation])
+    # Remove Stopwords and Punctuation if necessary
+    if(remove_stopwords == True):
+        data_processed = _remove_stopwords(data_processed)
+    if(remove_punctuation == True):
+        data_processed = _remove_punctuation(data_processed)
+    if(remove_stopwords == False and remove_punctuation == False):
+        data_processed = " ".join([word for word in data_processed.split()])
     
     # Save the processed data to the output file
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(data_processed)
+        
+    def load_text_data(data_file):
+        """Loads the text data from the given data txt file
+
+        Args:
+            data_file (str): The file name of the data to load
+
+        Returns:
+            str: The processed text data
+        """
+        with open(data_file, 'r', encoding='utf-8') as f:
+            data = f.read()
+        return data    
+    
 
 ####################
 # Helper Functions #
 ####################
-def _read_text_data(data_file):
-    """Reads the text data from the text_data folder
+def _remove_stopwords(data):
+    """Removes stopwords from the data
 
     Args:
-        data_file (str): The file name of the data to read
+        data (str): The data to remove stopwords from
 
     Returns:
-        str: The text data
+        str: The data with stopwords removed
     """
-    with open(data_file, 'r', encoding='utf-8') as f:
-        data = f.read()
-    return data
+    # Remove stopwords
+    data_processed = " ".join([word for word in data.split() if word not in STOPWORDS_SET])
+    return data_processed
+
+def _remove_punctuation(data):
+    """Removes punctuation from the data
+
+    Args:
+        data (str): The data to remove punctuation from
+
+    Returns:
+        str: The data with punctuation removed
+    """
+    data_processed = " ".join([word for word in data.split() if word not in string.punctuation])
+    return data_processed
         
 #################
 # Main function #

@@ -13,11 +13,7 @@ import os
 from PyPDF2 import PdfReader
 import requests
 from bs4 import BeautifulSoup
-
-# CONSTANTS
-RAW_DATA_FOLDER_PATH = "../data/raw_data"
-TEXT_DATA_FOLDER_PATH = "../data/text_data"
-PROCESSED_DATA_FOLDER_PATH = "../data/processed_data"
+from constants import RAW_DATA_FOLDER_PATH, TEXT_DATA_FOLDER_PATH, PROCESSED_DATA_FOLDER_PATH
 
 # Functions
 def load_pdf_data(filename: str, output_name: str, start_page: int = 0, end_page: int = None):
