@@ -44,18 +44,18 @@ def process_text(data_file, output_file, remove_stopwords=False, remove_punctuat
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(data_processed)
         
-    def load_text_data(data_file):
-        """Loads the text data from the given data txt file
+def load_text_data(data_file):
+    """Loads the text data from the given data txt file
 
-        Args:
-            data_file (str): The file name of the data to load
+    Args:
+        data_file (str): The file name of the data to load
 
-        Returns:
-            str: The processed text data
-        """
-        with open(data_file, 'r', encoding='utf-8') as f:
-            data = f.read()
-        return data    
+    Returns:
+        data (str): The processed text data as a string
+    """
+    with open(data_file, 'r', encoding='utf-8') as f:
+        data = f.read()
+    return data    
     
 
 ####################
@@ -68,7 +68,7 @@ def _remove_stopwords(data):
         data (str): The data to remove stopwords from
 
     Returns:
-        str: The data with stopwords removed
+        data_processed (str): The data with stopwords removed
     """
     # Remove stopwords
     data_processed = " ".join([word for word in data.split() if word not in STOPWORDS_SET])
@@ -81,7 +81,7 @@ def _remove_punctuation(data):
         data (str): The data to remove punctuation from
 
     Returns:
-        str: The data with punctuation removed
+        data_processed (str): The data with punctuation removed
     """
     data_processed = " ".join([word for word in data.split() if word not in string.punctuation])
     return data_processed

@@ -13,9 +13,4 @@ from nltk.corpus import stopwords
 RAW_DATA_FOLDER_PATH = "../data/raw_data"
 TEXT_DATA_FOLDER_PATH = "../data/text_data"
 PROCESSED_DATA_FOLDER_PATH = "../data/processed_data"
-
-try:
-    STOPWORDS_SET = set(stopwords.words("english"))
-except:
-    nltk.download('stopwords', quiet=True)
-    STOPWORDS_SET = set(stopwords.words("english"))
+STOPWORDS_SET = set(stopwords.words("english"))
