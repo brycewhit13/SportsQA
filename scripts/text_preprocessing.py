@@ -11,7 +11,6 @@
 # Imports
 import os
 import string
-import nltk
 from nltk.corpus import stopwords
 from constants import TEXT_DATA_FOLDER_PATH, PROCESSED_DATA_FOLDER_PATH, STOPWORDS_SET
 
