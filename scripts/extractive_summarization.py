@@ -10,12 +10,6 @@
 # References: https://github.com/AIPI540/AIPI540-Deep-Learning-Applications/blob/main/3_nlp/summarization/extractive_summarization.ipynb #
 ##########################################################################################################################################
 
-
-# TODO:
-# - Implement for each individual sport, not just a sample
-# - Remove ultimate_sample.txt from processed_data folder
-# - Compare the results to the abstractive summarization results
-
 # Imports
 import os
 import numpy as np
@@ -161,5 +155,5 @@ def pagerank_summarization(sentences, similarity_matrix, top_n=5):
 #################
 
 if __name__ == "__main__":
-    summary = extractive_summarization(datafile=os.path.join(PROCESSED_DATA_FOLDER_PATH, "ultimate_sample.txt"), top_n=2)
+    summary = extractive_summarization(datafile=os.path.join(PROCESSED_DATA_FOLDER_PATH, "ultimate_sample.txt"), top_n=3)
     print(summary)
