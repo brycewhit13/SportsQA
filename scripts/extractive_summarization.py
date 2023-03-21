@@ -1,7 +1,7 @@
 ##########################################################################################################################################
 # Filename: extractive_summarization.py                                                                                                  #
 # Author: Bryce Whitney                                                                                                                  #
-# Last Edit: 3/6/2023                                                                                                                    #
+# Last Edit: 3/21/2023                                                                                                                   #
 #                                                                                                                                        #
 # Description: This script performs extractive summarization                                                                             #
 # for the rulebooks of the different sports with the TextRank                                                                            #
