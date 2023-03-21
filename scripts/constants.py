@@ -6,7 +6,6 @@
 # Description: A file containing constants needed throughout the project #
 ##########################################################################
 # Imports
-import nltk
 from nltk.corpus import stopwords
 
 # CONSTANTS
