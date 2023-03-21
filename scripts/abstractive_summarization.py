@@ -80,11 +80,18 @@ def chunked_summary(input_text, model, tokenizer, min_chunk_len, max_chunk_len):
     summary = ''
     
     # Get input for each chunk
-    for chunk in chunked_inputs:
-        chunk = ''.join(chunk)
+    for i, chunk in enumerate(chunked_inputs):
+        chunk = ' '.join(chunk)
         chunk_summary = truncate_summary(input_text=chunk, model=model, tokenizer=tokenizer, min_length=min_chunk_len, max_length=max_chunk_len)
         chunk_summary = chunk_summary.split('</s>')[-2].split('<s>')[-1].strip()
-        summary += (' '+chunk_summary)
+        
+        # Add space between chunks if not the first chunk
+        if(i == 0):
+            summary += chunk_summary
+        else:
+            summary += (' '+chunk_summary)
+            
+    # Return the summary        
     return summary
 
     
