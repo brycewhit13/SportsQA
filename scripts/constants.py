@@ -1,10 +1,11 @@
 ##########################################################################
 # Filename: constants.py                                                 #
 # Author: Bryce Whitney                                                  #
-# Last Edit: 3/6/2023                                                    #
+# Last Edit: 3/24/2023                                                   #
 #                                                                        #
 # Description: A file containing constants needed throughout the project #
 ##########################################################################
+
 # Imports
 from nltk.corpus import stopwords
 
