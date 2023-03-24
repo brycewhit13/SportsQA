@@ -28,22 +28,51 @@ def get_league(sport: Sport, lower: bool = True):
     Returns:
         league (str): The league for the given sport
     """
-    if sport == Sport.FOOTBALL:
+    if sport.value == Sport.FOOTBALL.value:
         league = 'NFL'
-    elif sport == Sport.HOCKEY:
+    elif sport.value == Sport.HOCKEY.value:
         league = 'NHL'
-    elif sport == Sport.BASKETBALL:
+    elif sport.value == Sport.BASKETBALL.value:
         league = 'NBA'
-    elif sport == Sport.WOMENS_BASKETBALL:
+    elif sport.value == Sport.WOMENS_BASKETBALL.value:
         league = 'WNBA'
-    elif sport == Sport.CRICKET:
+    elif sport.value == Sport.CRICKET.value:
         league = 'ICC'
-    elif sport == Sport.ULTIMATE:
+    elif sport.value == Sport.ULTIMATE.value:
         league = 'USAU'
     else:
-        league = 'Unknown'
+        league = 'UNKNOWN'
     
     # Return lowercase if requested    
     if lower:
         league = league.lower()
     return league
+
+def get_sport_from_str(string: str):
+    """Gets the sport from the given string
+
+    Args:
+        string (str): The string to get the sport from
+
+    Returns:
+        sport (Sport): The sport for the given string
+    """
+    if string == 'Football':
+        sport = Sport.FOOTBALL
+    elif string == 'Hockey':
+        sport = Sport.HOCKEY
+    elif string == 'Basketball':
+        sport = Sport.BASKETBALL
+    elif string == 'Womens Basketball':
+        sport = Sport.WOMENS_BASKETBALL
+    elif string == 'Cricket':
+        sport = Sport.CRICKET
+    elif string == 'Ultimate':
+        sport = Sport.ULTIMATE
+    else:
+        sport = None
+    return sport
+
+
+if __name__ == "__main__":
+    print(get_league(Sport.FOOTBALL))
