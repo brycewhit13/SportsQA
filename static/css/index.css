@@ -7,3 +7,13 @@ h1 {
 p {
     color: red;
   }
+
+#question {
+    height: 25px;
+    width: 100%;
+  }
+
+#answer {
+    height: 100px;
+    width: 100%;
+  }
