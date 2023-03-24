@@ -13,10 +13,11 @@ import os
 from PyPDF2 import PdfReader
 import requests
 from bs4 import BeautifulSoup
-from constants import RAW_DATA_FOLDER_PATH, TEXT_DATA_FOLDER_PATH, PROCESSED_DATA_FOLDER_PATH
+from constants import RAW_DATA_FOLDER_PATH, TEXT_DATA_FOLDER_PATH
+from Sport import Sport, get_league
 
 # Functions
-def pdf_to_text(filename: str, output_name: str, start_page: int = 0, end_page: int = None):
+def pdf_to_text(filename: str, sport: Sport, start_page: int = 0, end_page: int = None):
     """Loads text from a pdf file and saves it to a txt file. You can specify the start and end pages to load
     and the resulting text is stored in the text_data folder with the output_name as the file name.
 
@@ -46,10 +47,11 @@ def pdf_to_text(filename: str, output_name: str, start_page: int = 0, end_page: 
         text += data.pages[page].extract_text()
     
     # Save to a txt file
+    output_name = get_league(sport, lower=True) + '_rules.txt'
     with open(os.path.join(TEXT_DATA_FOLDER_PATH, output_name), 'w', encoding='utf-8') as f:
         f.write(text)
 
-def scrape_ultimate_data():
+def scrape_ultimate_data(sport: Sport = Sport.ULTIMATE):
     """Scrapes USAU ultimate rules from the website and saves to a txt file
     """
     # Store the url
@@ -68,25 +70,26 @@ def scrape_ultimate_data():
         text += result.text
     
     # Save to a txt file
-    with open(os.path.join(TEXT_DATA_FOLDER_PATH, 'ultimate_rules.txt'), 'w', encoding='utf-8') as f:
+    output_name = get_league(sport, lower=True) + '_rules.txt'
+    with open(os.path.join(TEXT_DATA_FOLDER_PATH, output_name), 'w', encoding='utf-8') as f:
         f.write(text)
 
 # Main Function
 if __name__ == "__main__":
     print("Loading NFL Data...")
-    pdf_to_text(filename='2022-nfl-rulebook-final.pdf', output_name='nfl_rules.txt')
+    pdf_to_text(filename='2022-nfl-rulebook-final.pdf', sport=Sport.FOOTBALL)
     
     print("Loading NHL Data...")
-    pdf_to_text(filename='2022-nhl-rulebook.pdf', output_name='nhl_rules.txt')
+    pdf_to_text(filename='2022-nhl-rulebook.pdf', sport=Sport.HOCKEY)
     
     print("Loading NBA Data...")
-    pdf_to_text(filename='2022-2023-NBA-RULE-BOOK.pdf', output_name='nba_rules.txt')
+    pdf_to_text(filename='2022-2023-NBA-RULE-BOOK.pdf', sport=Sport.BASKETBALL)
     
     print("Loading WNBA Data...")
-    pdf_to_text(filename='2022-WNBA-RULE-BOOK-FINAL.pdf', output_name='wnba_rules.txt')
+    pdf_to_text(filename='2022-WNBA-RULE-BOOK-FINAL.pdf', sport=Sport.WOMENS_BASKETBALL)
     
     print("Loading Cricket Data...")
-    pdf_to_text(filename='2020-ICC-Playing-Handbook.pdf', output_name='cricket_rules.txt')
+    pdf_to_text(filename='2020-ICC-Playing-Handbook.pdf', sport=Sport.CRICKET)
     
     print("Loading Ultimate Data...")
-    scrape_ultimate_data()
+    scrape_ultimate_data(sport=Sport.ULTIMATE)
