@@ -7,6 +7,7 @@
 #########################################################################
 
 # Imports
+import os
 from flask import Flask, render_template, request
 import sys
 sys.path.append("scripts")
@@ -14,9 +15,9 @@ from scripts.question_answering import get_answer
 from scripts.Sport import get_sport_from_str
 
 # Initialize the Flask app
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def index():
     return render_template("index.html", qestion_display="", answer_display="")
 
