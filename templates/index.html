@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Home Page</title>
+  </head>
+  <body>
+	<h1> Welcome to the Sports Question and Answering App! </h1>
+    <form action="/result">
+        <label for="sport">Select a sport:</label>
+        <select id="sport" name="sport">
+          <option value="Football">Football (NFL)</option>
+          <option value="Hockey">Hockey (NHL)</option>
+          <option value="Basketball">Basketball (NBA)</option>
+          <option value="Womens Basketball">Basketball (WNBA)</option>
+          <option value="Cricket">Cricket (ICC)</option>
+          <option value="Ultimate">Ultimate Frisbee (USAU)</option>
+        </select> <br><br>
+
+        <label for="question">Question:</label> 
+        <input type="text", id="question", name="question", value={{question_display}}> </input>
+        <input type="submit" value="Submit"> <br><br>
+
+        <label for="answer">Answer:</label>
+        <input type="text", id="answer", name="answer", value={{answer_display}}> </input> <br><br>
+    <form>
+
+  </body>
+</html>
+
+<!--
+TODO: 
+    - Make the resution and answer box bigger
+    - Style everything
+    - Get the answer retrieval working
+-->
