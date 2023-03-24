@@ -15,7 +15,6 @@ import networkx as nx
 from nltk import sent_tokenize
 from nltk.cluster.util import cosine_distance
 from sklearn.feature_extraction.text import TfidfVectorizer
-from constants import PROCESSED_DATA_FOLDER_PATH
 from text_preprocessing import load_processed_data, _remove_stopwords
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
