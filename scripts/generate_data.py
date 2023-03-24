@@ -1,7 +1,7 @@
 ####################################################################
-# Filename: load_data.py                                           #
+# Filename: generate_data.py                                       #
 # Author: Bryce Whitney                                            #
-# Last Edit: 2/27/2023                                             #
+# Last Edit: 3/24/2023                                             #
 #                                                                  #
 # Description: This script loads the data from the raw_data folder #
 # or scrapes it from the web and saves it to the text_data folder. #
@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 from constants import RAW_DATA_FOLDER_PATH, TEXT_DATA_FOLDER_PATH, PROCESSED_DATA_FOLDER_PATH
 
 # Functions
-def load_pdf_data(filename: str, output_name: str, start_page: int = 0, end_page: int = None):
+def pdf_to_text(filename: str, output_name: str, start_page: int = 0, end_page: int = None):
     """Loads text from a pdf file and saves it to a txt file. You can specify the start and end pages to load
     and the resulting text is stored in the text_data folder with the output_name as the file name.
 
@@ -74,19 +74,19 @@ def scrape_ultimate_data():
 # Main Function
 if __name__ == "__main__":
     print("Loading NFL Data...")
-    load_pdf_data(filename='2022-nfl-rulebook-final.pdf', output_name='nfl_rules.txt')
+    pdf_to_text(filename='2022-nfl-rulebook-final.pdf', output_name='nfl_rules.txt')
     
     print("Loading NHL Data...")
-    load_pdf_data(filename='2022-nhl-rulebook.pdf', output_name='nhl_rules.txt')
+    pdf_to_text(filename='2022-nhl-rulebook.pdf', output_name='nhl_rules.txt')
     
     print("Loading NBA Data...")
-    load_pdf_data(filename='2022-2023-NBA-RULE-BOOK.pdf', output_name='nba_rules.txt')
+    pdf_to_text(filename='2022-2023-NBA-RULE-BOOK.pdf', output_name='nba_rules.txt')
     
     print("Loading WNBA Data...")
-    load_pdf_data(filename='2022-WNBA-RULE-BOOK-FINAL.pdf', output_name='wnba_rules.txt')
+    pdf_to_text(filename='2022-WNBA-RULE-BOOK-FINAL.pdf', output_name='wnba_rules.txt')
     
     print("Loading Cricket Data...")
-    load_pdf_data(filename='2020-ICC-Playing-Handbook.pdf', output_name='cricket_rules.txt')
+    pdf_to_text(filename='2020-ICC-Playing-Handbook.pdf', output_name='cricket_rules.txt')
     
     print("Loading Ultimate Data...")
     scrape_ultimate_data()
