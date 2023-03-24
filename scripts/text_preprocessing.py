@@ -105,31 +105,6 @@ def _load_text_data(data_file: str):
 # Main function #
 #################
 if __name__ == "__main__":
-    '''
-    # Process NFL Rules
-    print("Processing NFL Rules...")
-    process_text(Sport.FOOTBALL)
-    
-    # Process NHL Rules
-    print("Processing NHL Rules...")
-    process_text(Sport.HOCKEY)
-    
-    # Process NBA Rules
-    print("Processing NBA Rules...")
-    process_text(Sport.BASKETBALL)
-    
-    # Process WNBA Rules
-    print("Processing WNBA Rules...")
-    process_text(Sport.WOMENS_BASKETBALL)
-    
-    # Process Cricket Rules
-    print("Processing Cricket Rules...")
-    process_text(Sport.CRICKET)
-    
-    # Process ultimate Rules
-    print("Processing Ultimate Rules...")
-    process_text(Sport.ULTIMATE)
-    '''
     for sport in Sport:
         print(f"Processing {sport.value} Rules...")
         process_text(sport)
