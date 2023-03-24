@@ -27,4 +27,7 @@ def result():
     sport = get_sport_from_str(request.args.get("sport"))    
     answer = get_answer(question, sport)
     
+    print(f"Question: {question}")
+    print(f"Answer: {answer}")
+    
     return render_template("index.html", question_display=question, answer_display=answer)
