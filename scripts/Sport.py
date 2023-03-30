@@ -39,7 +39,9 @@ def get_league(sport: Sport, lower: bool = True):
     elif sport.value == Sport.CRICKET.value:
         league = 'ICC'
     elif sport.value == Sport.ULTIMATE.value:
-        league = 'USAU'
+        # TODO: Remove when done testing
+        league = 'usau_sample'
+        #league = 'USAU'
     else:
         league = 'UNKNOWN'
     

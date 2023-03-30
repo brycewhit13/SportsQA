@@ -24,10 +24,11 @@ def index():
 @app.route("/result", methods=["GET"])
 def result():
     question = request.args.get("question")    
-    sport = get_sport_from_str(request.args.get("sport"))    
-    answer = get_answer(question, sport)
-    
-    print(f"Question: {question}")
+    sport = get_sport_from_str(request.args.get("sport"))   
+    answer, context = get_answer(question, sport)
+
+    print(f"\nQuestion: {question}")
     print(f"Answer: {answer}")
+    print(f"Context: {context}\n")
     
     return render_template("index.html", question_display=question, answer_display=answer)
