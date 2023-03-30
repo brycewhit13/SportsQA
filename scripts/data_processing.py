@@ -14,8 +14,7 @@ import requests
 from PyPDF2 import PdfReader
 from bs4 import BeautifulSoup
 
-from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from azure.storage.blob import BlobServiceClient
 
 from Sport import Sport, get_league
 from constants import RAW_DATA_FOLDER_PATH, TEXT_DATA_FOLDER_PATH, PROCESSED_DATA_FOLDER_PATH, STOPWORDS_SET
@@ -26,6 +25,11 @@ CONTAINER_NAME = "sports-data"
 
 ##### Establish Azure Connection #####
 def establish_connection():
+    """Establishes a connection to the Azure blob storage system
+
+    Returns:
+        tuple: A tuple containing the BlobServiceClient and ContainerClient objects
+    """
     # Create the BlobServiceClient and ContainerClient objects
     blob_service_client = BlobServiceClient.from_connection_string(os.getenv("AZURE_STORAGE_CONNECTION_STRING"))
     container_client = blob_service_client.get_container_client(CONTAINER_NAME)
@@ -34,7 +38,13 @@ def establish_connection():
     return blob_service_client, container_client
 
 ##### Download Functions #####
-def download_raw_data(container_client, download_folder = os.path.join("..", "data", "raw_data2")):
+def download_raw_data(container_client, download_folder = os.path.join("..", "data", "raw_data")):
+    """Downloads the raw data from the Azure blob storage system
+
+    Args:
+        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
+        download_folder (str, optional): path. Defaults to "../data/raw_data").
+    """
     # If download folder doesn't exist, create it
     if not os.path.exists(download_folder):
         os.makedirs(download_folder)
@@ -51,7 +61,13 @@ def download_raw_data(container_client, download_folder = os.path.join("..", "da
         with open(file=download_path, mode="wb") as download_file:
             download_file.write(container_client.download_blob(blob.name).readall())
 
-def download_text_data(container_client, download_folder = os.path.join("..", "data", "text_data2")):
+def download_text_data(container_client, download_folder = os.path.join("..", "data", "text_data")):
+    """Downloads the text data from the Azure blob storage system
+
+    Args:
+        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
+        download_folder (str, optional): path. Defaults to "../data/text_data").
+    """
     # If download folder doesn't exist, create it
     if not os.path.exists(download_folder):
         os.makedirs(download_folder)
@@ -68,7 +84,13 @@ def download_text_data(container_client, download_folder = os.path.join("..", "d
         with open(file=download_path, mode="wb") as download_file:
             download_file.write(container_client.download_blob(blob.name).readall())
 
-def download_processed_data(container_client, download_folder = os.path.join("..", "data", "processed_data2")):
+def download_processed_data(container_client, download_folder = os.path.join("..", "data", "processed_data")):
+    """Downloads the processed data from the Azure blob storage system
+
+    Args:
+        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
+        download_folder (str, optional): path. Defaults to "../data/processed_data").
+    """
     # If download folder doesn't exist, create it
     if not os.path.exists(download_folder):
         os.makedirs(download_folder)
@@ -86,6 +108,12 @@ def download_processed_data(container_client, download_folder = os.path.join("..
             download_file.write(container_client.download_blob(blob.name).readall())
             
 def download_all_data(container_client):
+    """Downloads all of the data from the Azure blob storage system
+    
+    Args:
+        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
+    """
+    
     print("Downloading the raw data...")
     download_raw_data(container_client)
     
@@ -98,6 +126,13 @@ def download_all_data(container_client):
     
 ##### Upload Functions #####
 def upload_file_to_azure(container_client, file_path, upload_folder):
+    """Uploads a file to the Azure blob storage system
+
+    Args:
+        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
+        file_path (str): path to the file to upload
+        upload_folder (str): name of the folder to upload the file to
+    """
     # Get the file name
     file_name = os.path.split(file_path)[1]
     
@@ -107,6 +142,13 @@ def upload_file_to_azure(container_client, file_path, upload_folder):
         
         
 def upload_folder_to_azure(container_client, folder_path, upload_folder):
+    """Uploads a folder to the Azure blob storage system
+
+    Args:
+        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
+        folder_path (str): path to the folder to upload
+        upload_folder (str): name of the folder to upload the file to
+    """
     # List the files in the folder
     file_list = os.listdir(folder_path)
     
