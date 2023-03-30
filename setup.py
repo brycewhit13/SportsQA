@@ -9,6 +9,8 @@
 # Imports
 import os
 import nltk
+import sys
+sys.path.append('scripts')
 
 from scripts.constants import TEXT_DATA_FOLDER_PATH, PROCESSED_DATA_FOLDER_PATH, RAW_DATA_FOLDER_PATH
 from scripts.data_processing import establish_connection, download_all_data
@@ -34,3 +36,4 @@ print("Downloading the data from azure...")
 blob_service_client, container_client = establish_connection()
 download_all_data(container_client)
     
+print("Setup complete!")
