@@ -1,0 +1,1 @@
+{"sql_url": "sqlite:///..\\data\\document_store/nba/faiss_document_store.db", "faiss_index_factory_str": "Flat"}
