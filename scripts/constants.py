@@ -15,6 +15,7 @@ from nltk.corpus import stopwords
 RAW_DATA_FOLDER_PATH = os.path.join("data", "raw_data")
 TEXT_DATA_FOLDER_PATH = os.path.join("data", "text_data")
 PROCESSED_DATA_FOLDER_PATH = os.path.join("data", "processed_data")
+DOCUMENT_STORE_FOLDER_PATH = os.path.join("data", "document_store")
 
 # Modeling Constants
 STOPWORDS_SET = set(stopwords.words("english"))

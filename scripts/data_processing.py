@@ -1,7 +1,7 @@
 ####################################################################
 # Filename: get_data.py                                            #
 # Author: Bryce Whitney                                            #
-# Last Edit: 3/30/2023                                             #
+# Last Edit: 4/4/2023                                              #
 #                                                                  #
 # Description: Contains functions for generating the data and      #
 # uploading / downloading it from the Azure blob storage system.   #
@@ -9,15 +9,41 @@
 
 # Imports
 import os
+import sys
 import string
 import requests
 from PyPDF2 import PdfReader
 from bs4 import BeautifulSoup
 
+from haystack.nodes import PreProcessor, DensePassageRetriever
+from haystack.document_stores import FAISSDocumentStore
+from haystack import Document
+
 from azure.storage.blob import BlobServiceClient
 
 from Sport import Sport, get_league
 from constants import *
+
+##### FAISS Document Store Methods #####
+def get_document_store(sport: Sport, document_folder_path=DOCUMENT_STORE_FOLDER_PATH):
+    """Get the FAISSDocumentStore object if it exists, otherwise create it
+
+    Returns:
+        FAISSDocumentStore: A FAISSDocumentStore object
+    """
+    # Get the league of the sport
+    league = get_league(sport)
+    
+    # Path to the index file
+    index_path=os.path.join(document_folder_path, league, f"{league}_index.faiss")
+    
+    # If the index file exist, load the FAISSDocumentStore object
+    print(f"Checking if {index_path} exists...")
+    if os.path.exists(index_path):
+        print("Loading FAISSDocumentStore object...")
+        return FAISSDocumentStore.load(index_path=index_path)
+    print("Doesn't exist, creating FAISSDocumentStore object...")
+    return FAISSDocumentStore(sql_url=f"sqlite:///{document_folder_path}/{league}/faiss_document_store.db", faiss_index_factory_str="Flat")
 
 ##### Establish Azure Connection #####
 def establish_connection(container_name=CONTAINER_NAME):
@@ -104,6 +130,29 @@ def download_processed_data(container_client, download_folder = os.path.join("..
         # Download the file
         with open(file=download_path, mode="wb") as download_file:
             download_file.write(container_client.download_blob(blob.name).readall())
+
+def download_document_store(container_client, download_folder = DOCUMENT_STORE_FOLDER_PATH):
+    """Downloads the document store from the Azure blob storage system
+
+    Args:
+        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
+        download_folder (str, optional): path. Defaults to DOCUMENT_STORE_FOLDER_PATH).
+    """
+    # If download folder doesn't exist, create it
+    if not os.path.exists(download_folder):
+        os.makedirs(download_folder)
+        
+    # List the blobs in the document-store container
+    blob_list = container_client.list_blobs(name_starts_with="document-store")
+    
+    # For each file
+    for blob in blob_list:
+        file_name = os.path.split(blob.name)[1]
+        download_path = os.path.join(download_folder, file_name)
+
+        # Download the file
+        with open(file=download_path, mode="wb") as download_file:
+            download_file.write(container_client.download_blob(blob.name).readall())
             
 def download_all_data(container_client):
     """Downloads all of the data from the Azure blob storage system
@@ -120,6 +169,11 @@ def download_all_data(container_client):
     
     print("Downloading the processed data...")
     download_processed_data(container_client)
+    
+    print("Downloading Document Store...")
+    download_document_store(container_client)
+    
+    print("Download Complete!")
     
     
 ##### Upload Functions #####
@@ -252,7 +306,56 @@ def process_text(sport: Sport, remove_stopwords: bool = False, remove_punctuatio
     # Save the processed data to the output file
     output_file = os.path.join(dest_folder, get_league(sport, lower=True) + "_rules_processed.txt")
     with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(data_processed)    
+        f.write(data_processed)
+        
+
+def chunk_processed_data(sport: Sport, split_length: int = 250, split_overlap: int = 100, processed_data_folder: str = PROCESSED_DATA_FOLDER_PATH, document_folder: str = DOCUMENT_STORE_FOLDER_PATH):
+    """Chunks the data for the sport into multiple files and stores them in the document store for that sport
+
+    Args:
+        sport (Sport): The sport to chunk the data for
+        split_length (int, optional): The length of each chunk. Defaults to 250.
+        split_overlap (int, optional): The overlap between chunks. Defaults to 100.
+        processed_data_folder (str, optional): The folder to load the processed data from. Defaults to PROCESSED_DATA_FOLDER_PATH.
+        document_folder (str, optional): The folder to store the document store in. Defaults to DOCUMENT_STORE_FOLDER_PATH.
+    """
+    # Get the document store for the sport
+    document_store = get_document_store(sport, document_folder_path=document_folder)
+    league = get_league(sport, lower=True)
+    
+    # Load the processed data
+    text = load_processed_data(sport, folder_path=processed_data_folder)
+    document = Document(content=text, content_type="text", meta={"name": league + "_rules"})
+    
+    # Chunk the data with the preprocessor
+    preprocessor = PreProcessor(
+        clean_empty_lines=True,
+        clean_whitespace=True,
+        clean_header_footer=True,
+        split_by='word',
+        split_length=split_length,
+        split_overlap=split_overlap,
+        split_respect_sentence_boundary=True,
+        max_chars_check=sys.maxsize,
+    )
+    
+    processed_docs = preprocessor.process([document])
+    
+    # Write the data to the document store
+    document_store.write_documents(processed_docs)
+    
+    # intialize DensePassageRetriever
+    retriever = DensePassageRetriever(
+        document_store=document_store,
+        query_embedding_model="facebook/dpr-question_encoder-single-nq-base",
+        passage_embedding_model="facebook/dpr-ctx_encoder-single-nq-base"
+    )
+
+    # update embeddings
+    document_store.update_embeddings(retriever)
+    
+    # Save the document store and delete the databse
+    document_store.save(index_path=os.path.join(document_folder, league, f"{league}_index.faiss"))
     
     
 def load_processed_data(sport: Sport, folder_path: str = PROCESSED_DATA_FOLDER_PATH):
@@ -319,7 +422,9 @@ if __name__ == "__main__":
     raw_folder = os.path.join('..', RAW_DATA_FOLDER_PATH)
     text_folder = os.path.join('..', TEXT_DATA_FOLDER_PATH)
     processed_folder = os.path.join('..', PROCESSED_DATA_FOLDER_PATH)
+    document_store_folder = os.path.join('..', DOCUMENT_STORE_FOLDER_PATH)
     
+    '''
     # Convert the pdf data to text data
     print("Converting the pdf data to text data...")
     print("Converting the NFL data...")
@@ -336,16 +441,12 @@ if __name__ == "__main__":
     # Scrape the ultimate data
     print("Scraping the Ultimate Data...")
     scrape_ultimate_data(sport=Sport.ULTIMATE, dest_folder=text_folder)
-    
+    '''
     # Process the text data
     for sport in Sport:
         print(f"Processing {sport.value} Rules...")
         process_text(sport, origin_folder=text_folder, dest_folder=processed_folder)
-    
-    # Upload the processed data to blob storage
-    blob_service_client, container_client = establish_connection()
-    upload_folder_to_azure(container_client=container_client, folder_path=raw_folder, upload_folder='raw-data')
-    upload_folder_to_azure(container_client=container_client, folder_path=text_folder, upload_folder='text-data')
-    upload_folder_to_azure(container_client=container_client, folder_path=processed_folder, upload_folder='processed-data')
-    
-    
+        
+        print(f"Chunking {sport.value} Rules...")
+        chunk_processed_data(sport, split_length=2000, split_overlap=100, processed_data_folder=processed_folder, document_folder=document_store_folder)
+        

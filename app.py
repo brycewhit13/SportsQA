@@ -11,7 +11,7 @@ import os
 from flask import Flask, render_template, request
 import sys
 sys.path.append("scripts")
-from scripts.question_answering import get_answer
+from scripts.question_answering import get_answer, query_document_store
 from scripts.Sport import get_sport_from_str
 
 # Initialize the Flask app
@@ -25,7 +25,7 @@ def index():
 def result():
     question = request.args.get("question")    
     sport = get_sport_from_str(request.args.get("sport"))   
-    answer, context = get_answer(question, sport)
+    answer, context = query_document_store(question, sport)
 
     print(f"\nQuestion: {question}")
     print(f"Answer: {answer}")

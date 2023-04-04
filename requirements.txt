@@ -1,6 +1,6 @@
 azure-storage-blob==12.15.0
 beautifulsoup4==4.11.1
-farm-haystack==1.14.0
+farm-haystack[faiss]==1.14.0
 flask==2.2.3
 networkx==3.0
 nltk==3.8.1
