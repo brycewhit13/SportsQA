@@ -17,11 +17,7 @@ from bs4 import BeautifulSoup
 from azure.storage.blob import BlobServiceClient
 
 from Sport import Sport, get_league
-from constants import RAW_DATA_FOLDER_PATH, TEXT_DATA_FOLDER_PATH, PROCESSED_DATA_FOLDER_PATH, STOPWORDS_SET
-
-# Constants
-STORAGE_ACCOUNT_NAME = "sportsrulesdb"
-CONTAINER_NAME = "sports-data"
+from constants import *
 
 ##### Establish Azure Connection #####
 def establish_connection():

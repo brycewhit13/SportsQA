@@ -16,10 +16,11 @@ from haystack.document_stores import InMemoryDocumentStore
 from haystack.nodes import BM25Retriever, FARMReader
 from haystack.pipelines.standard_pipelines import TextIndexingPipeline
 from haystack.pipelines import ExtractiveQAPipeline
-from haystack.utils import print_answers
 from Sport import Sport, get_league
 
 # TODO: Potential problem with newlines in the text file
+# TODO: Maybe remove the article numbers in the preprocessing step
+
 ##### FUNCTIONS #####
 def get_user_question():
     question = input("Please enter a question: ")
@@ -42,9 +43,14 @@ def get_answer(question: str, sport: Sport):
 
     # Initialize the pipeline and retrieve an answer
     pipe = ExtractiveQAPipeline(reader, retriever)
-    answer = pipe.run(query=question, params={"Retriever": {"top_k": 5}, "Reader": {"top_k": 1}})
+    answer_obj = pipe.run(query=question, params={"Retriever": {"top_k": 5}, "Reader": {"top_k": 1}})
     
-    return answer
+    # Extract the answer and context from the answer object
+    answer = answer_obj["answers"][0].answer
+    context = answer_obj["answers"][0].context
+    
+    # Return the answer and the context
+    return answer, context
 
 ##### Testing #####
 # TODO: DELETE ONCE UP AND RUNNING
@@ -61,20 +67,31 @@ def _get_answer(question: str, file_path: str):
     
     # Initialize the pipeline and retrieve an answer
     pipe = ExtractiveQAPipeline(reader, retriever)
-    answer = pipe.run(query=question, params={"Retriever": {"top_k": 5}, "Reader": {"top_k": 1}})
+    answer_obj = pipe.run(query=question, params={"Retriever": {"top_k": 5}, "Reader": {"top_k": 1}})
     
-    return answer
+    # Extract the answer and context from the answer object
+    answer = answer_obj["answers"][0].answer
+    context = answer_obj["answers"][0].context
+    
+    return answer, context
 
 
 ##### MAIN #####
 if __name__ == "__main__":    
-    context_path = os.path.join(PROCESSED_DATA_FOLDER_PATH, "ultimate_sample.txt")
+    context_path = "../data/processed_data/usau_sample_rules_processed.txt"
     
     question = "How many players are on the field for each team?"
-    answer = _get_answer(question, context_path)
+    answer, context = _get_answer(question, context_path)
     
     question2 = "What is the event organizer clause?"
-    answer2 = get_answer(question2, context_path)
+    answer2, context2 = _get_answer(question2, context_path)
     
-    print_answers(answer, details="minimum")
-    print_answers(answer2, details="minimum")
+    print("\n")
+    print(f"Question: {question}")
+    print(f"Answer: {answer}")
+    print(f"Context: {context}")
+    
+    print("\n")
+    print(f"Question: {question2}")
+    print(f"Answer: {answer2}")
+    print(f"Context: {context2}")
