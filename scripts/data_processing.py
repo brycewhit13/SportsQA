@@ -20,15 +20,17 @@ from Sport import Sport, get_league
 from constants import *
 
 ##### Establish Azure Connection #####
-def establish_connection():
+def establish_connection(container_name=CONTAINER_NAME):
     """Establishes a connection to the Azure blob storage system
-
+    Args:
+        container_name (str, optional): Name of the container to connect to. Defaults to "sports-data".
+        
     Returns:
         tuple: A tuple containing the BlobServiceClient and ContainerClient objects
     """
     # Create the BlobServiceClient and ContainerClient objects
     blob_service_client = BlobServiceClient.from_connection_string(os.getenv("AZURE_STORAGE_CONNECTION_STRING"))
-    container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+    container_client = blob_service_client.get_container_client(container_name)
     
     # Return the clients
     return blob_service_client, container_client
@@ -158,7 +160,7 @@ def upload_folder_to_azure(container_client, folder_path, upload_folder):
         
         
 ##### Data Generation Functions #####
-def pdf_to_text(filename: str, sport: Sport, start_page: int = 0, end_page: int = None):
+def pdf_to_text(filename: str, sport: Sport, start_page: int = 0, end_page: int = None, origin_folder: str = RAW_DATA_FOLDER_PATH, dest_folder: str = TEXT_DATA_FOLDER_PATH):
     """Loads text from a pdf file and saves it to a txt file. You can specify the start and end pages to load
     and the resulting text is stored in the text_data folder with the output_name as the file name.
 
@@ -167,9 +169,11 @@ def pdf_to_text(filename: str, sport: Sport, start_page: int = 0, end_page: int 
         output_name (str): Output file name
         start_page (int, optional): the first page to load. Defaults to 0.
         end_page (int, optional): the last page to load. Defaults to None.
+        origin_folder (str, optional): the folder to load the file from. Defaults to RAW_DATA_FOLDER_PATH.
+        dest_folder (str, optional): the folder to save the file to. Defaults to TEXT_DATA_FOLDER_PATH.
     """
     # Load the rulebook from the PDF
-    data = PdfReader(os.path.join(RAW_DATA_FOLDER_PATH, filename))
+    data = PdfReader(os.path.join(origin_folder, filename))
     
     # If no end page is specified, use the last page
     # Check to make sure it is valid if it is specified
@@ -189,11 +193,15 @@ def pdf_to_text(filename: str, sport: Sport, start_page: int = 0, end_page: int 
     
     # Save to a txt file
     output_name = get_league(sport, lower=True) + '_rules.txt'
-    with open(os.path.join(TEXT_DATA_FOLDER_PATH, output_name), 'w', encoding='utf-8') as f:
+    with open(os.path.join(dest_folder, output_name), 'w', encoding='utf-8') as f:
         f.write(text)
 
-def scrape_ultimate_data(sport: Sport = Sport.ULTIMATE):
+def scrape_ultimate_data(sport: Sport = Sport.ULTIMATE, dest_folder: str = TEXT_DATA_FOLDER_PATH):
     """Scrapes USAU ultimate rules from the website and saves to a txt file
+    
+    Args:
+        sport (Sport, optional): The sport to scrape the rules for. Defaults to Sport.ULTIMATE.
+        dest_folder (str, optional): the folder to save the file to. Defaults to TEXT_DATA_FOLDER_PATH.
     """
     # Store the url
     url = 'https://usaultimate.org/rules/'
@@ -212,19 +220,21 @@ def scrape_ultimate_data(sport: Sport = Sport.ULTIMATE):
     
     # Save to a txt file
     output_name = get_league(sport, lower=True) + '_rules.txt'
-    with open(os.path.join(TEXT_DATA_FOLDER_PATH, output_name), 'w', encoding='utf-8') as f:
+    with open(os.path.join(dest_folder, output_name), 'w', encoding='utf-8') as f:
         f.write(text)
 
 ##### Text Preprocessing Functions #####
-def process_text(sport: Sport, remove_stopwords: bool = False, remove_punctuation: bool = False):
+def process_text(sport: Sport, remove_stopwords: bool = False, remove_punctuation: bool = False, origin_folder: str = TEXT_DATA_FOLDER_PATH, dest_folder: str = PROCESSED_DATA_FOLDER_PATH):
     """Processes the text data from the text_data folder and stores the results in the processed_data folder.
 
     Args:
         data_file (str): The file name of the data to process
         output_file (str): The file name to store the processed data
+        origin_folder (str, optional): The folder to load the data from. Defaults to TEXT_DATA_FOLDER_PATH.
+        dest_folder (str, optional): The folder to save the processed data to. Defaults to PROCESSED_DATA_FOLDER_PATH.
     """
     # Read in the data
-    data_file = os.path.join(TEXT_DATA_FOLDER_PATH, get_league(sport, lower=True) + "_rules.txt")
+    data_file = os.path.join(origin_folder, get_league(sport, lower=True) + "_rules.txt")
     data = _load_text_data(data_file)
     
     # Make everything lowercase
@@ -240,21 +250,22 @@ def process_text(sport: Sport, remove_stopwords: bool = False, remove_punctuatio
         data_processed = " ".join([word for word in data_processed.split()])
     
     # Save the processed data to the output file
-    output_file = os.path.join(PROCESSED_DATA_FOLDER_PATH, get_league(sport, lower=True) + "_rules_processed.txt")
+    output_file = os.path.join(dest_folder, get_league(sport, lower=True) + "_rules_processed.txt")
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(data_processed)    
     
     
-def load_processed_data(sport: Sport):
+def load_processed_data(sport: Sport, folder_path: str = PROCESSED_DATA_FOLDER_PATH):
     """Loads the processed data from the processed_data folder
 
     Args:
         sport (Sport): The sport to load the data for
-
+        folder_path (str, optional): The folder to load the data from. Defaults to PROCESSED_DATA_FOLDER_PATH.
+        
     Returns:
         str: The processed text data
     """
-    data_file = os.path.join(PROCESSED_DATA_FOLDER_PATH, get_league(sport, lower=True) + "_rules_processed.txt")
+    data_file = os.path.join(folder_path, get_league(sport, lower=True) + "_rules_processed.txt")
     with open(data_file, 'r', encoding='utf-8') as f:
         data = f.read()
     return data
@@ -300,40 +311,41 @@ def _load_text_data(data_file: str):
 
 ##### Main ######
 if __name__ == "__main__":
-    # Establish the connection
-    #blob_service_client, container_client = establish_connection()
-    
-    # Download the data
-    #download_all_data(container_client)
-    
     ##################################
     # Pipleline from start to finish #
     ##################################
     
+    # Indicate the data folders
+    raw_folder = os.path.join('..', RAW_DATA_FOLDER_PATH)
+    text_folder = os.path.join('..', TEXT_DATA_FOLDER_PATH)
+    processed_folder = os.path.join('..', PROCESSED_DATA_FOLDER_PATH)
+    
     # Convert the pdf data to text data
     print("Converting the pdf data to text data...")
     print("Converting the NFL data...")
-    pdf_to_text(filename='2022-nfl-rulebook-final.pdf', sport=Sport.FOOTBALL)
+    pdf_to_text(filename='2022-nfl-rulebook-final.pdf', sport=Sport.FOOTBALL, origin_folder=raw_folder, dest_folder=text_folder)
     print("Converting the NHL data...")
-    pdf_to_text(filename='2022-nhl-rulebook.pdf', sport=Sport.HOCKEY)
+    pdf_to_text(filename='2022-nhl-rulebook.pdf', sport=Sport.HOCKEY, origin_folder=raw_folder, dest_folder=text_folder)
     print("Converting the NBA data...")
-    pdf_to_text(filename='2022-2023-NBA-RULE-BOOK.pdf', sport=Sport.BASKETBALL)
+    pdf_to_text(filename='2022-2023-NBA-RULE-BOOK.pdf', sport=Sport.BASKETBALL, origin_folder=raw_folder, dest_folder=text_folder)
     print("Converting the WNBA data...")
-    pdf_to_text(filename='2022-WNBA-RULE-BOOK-FINAL.pdf', sport=Sport.WOMENS_BASKETBALL)
+    pdf_to_text(filename='2022-WNBA-RULE-BOOK-FINAL.pdf', sport=Sport.WOMENS_BASKETBALL, origin_folder=raw_folder, dest_folder=text_folder)
     print("Converting the ICC data...")
-    pdf_to_text(filename='2020-ICC-Playing-Handbook.pdf', sport=Sport.CRICKET)
+    pdf_to_text(filename='2020-ICC-Playing-Handbook.pdf', sport=Sport.CRICKET, origin_folder=raw_folder, dest_folder=text_folder)
     
     # Scrape the ultimate data
     print("Scraping the Ultimate Data...")
-    scrape_ultimate_data(sport=Sport.ULTIMATE)
+    scrape_ultimate_data(sport=Sport.ULTIMATE, dest_folder=text_folder)
     
     # Process the text data
     for sport in Sport:
         print(f"Processing {sport.value} Rules...")
-        process_text(sport)
+        process_text(sport, origin_folder=text_folder, dest_folder=processed_folder)
     
     # Upload the processed data to blob storage
     blob_service_client, container_client = establish_connection()
-    upload_folder_to_azure(container_client=container_client, folder_path=PROCESSED_DATA_FOLDER_PATH, upload_folder='processed-data')
+    upload_folder_to_azure(container_client=container_client, folder_path=raw_folder, upload_folder='raw-data')
+    upload_folder_to_azure(container_client=container_client, folder_path=text_folder, upload_folder='text-data')
+    upload_folder_to_azure(container_client=container_client, folder_path=processed_folder, upload_folder='processed-data')
     
     
