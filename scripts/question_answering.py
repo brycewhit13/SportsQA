@@ -11,6 +11,8 @@
 
 # Imports
 import os
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 from haystack import Pipeline
 from haystack.document_stores import InMemoryDocumentStore
@@ -20,7 +22,7 @@ from haystack.pipelines import ExtractiveQAPipeline
 
 from constants import PROCESSED_DATA_FOLDER_PATH, DOCUMENT_STORE_FOLDER_PATH
 from Sport import Sport, get_league
-from data_processing import get_document_store
+from data_processing import get_document_store, load_processed_data
 
 # TODO: Potential problem with newlines in the text file
 # TODO: Maybe remove the article numbers in the preprocessing step
@@ -39,7 +41,7 @@ def get_answer(question: str, sport: Sport):
     # Initialize the retriever and reader
     document_store = InMemoryDocumentStore(use_bm25=True)
     retriever = BM25Retriever(document_store=document_store)
-    reader = FARMReader(model_name_or_path="deepset/tinyroberta-squad2", use_gpu=False)
+    reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=False)
     
     # Convert the text into document objects
     indexing_pipeline = TextIndexingPipeline(document_store)
@@ -58,9 +60,8 @@ def get_answer(question: str, sport: Sport):
 
 def query_document_store(question: str, sport: Sport, document_folder_path: str = DOCUMENT_STORE_FOLDER_PATH):
     # Get the appropriate document store
-    league = get_league(sport)
     document_store = get_document_store(sport, document_folder_path=document_folder_path)
-
+    
     # intialize DensePassageRetriever and reader
     retriever = DensePassageRetriever(
         document_store=document_store,
@@ -68,7 +69,7 @@ def query_document_store(question: str, sport: Sport, document_folder_path: str 
         passage_embedding_model="facebook/dpr-ctx_encoder-single-nq-base"
     )
     reader = FARMReader(model_name_or_path="deepset/tinyroberta-squad2", use_gpu=False)
-    
+
     # Initialize the pipeline and retrieve an answer
     pipe = ExtractiveQAPipeline(reader, retriever)
     answer_obj = pipe.run(query=question, params={"Retriever": {"top_k": 5}, "Reader": {"top_k": 1}})
@@ -79,6 +80,34 @@ def query_document_store(question: str, sport: Sport, document_folder_path: str 
     
     # Return the answer and the context
     return answer, context
+
+
+def get_tfidf_answer(question: str, sport: Sport, processed_data_folder_path: str = PROCESSED_DATA_FOLDER_PATH):
+    """Uses TF-IDF to find the sentence with the highest cosine similarity to the question and returns that sentence as the answer
+
+    Args:
+        question (str): The question to be answered
+        sport (Sport): The sport of the rulebook
+        processed_data_folder_path (str, optional): The path to the processed data folder. Defaults to PROCESSED_DATA_FOLDER_PATH.
+
+    Returns:
+        str: The answer which is the sentence with the highest cosine similarity to the question
+    """
+    # Load the processed data and get all the sentences
+    data = load_processed_data(sport, folder_path=processed_data_folder_path)
+    sentences = data.split(".")
+
+    # Fit a TF-IDF vectorizer on the data
+    vectorizer = TfidfVectorizer()
+    sentence_embeddings = vectorizer.fit_transform(sentences)
+    question_embedding = vectorizer.transform([question])
+    
+    # Calculate the cosine similarity between the question and each sentence
+    cosine_similarities = cosine_similarity(question_embedding, sentence_embeddings)
+    
+    # Find the sentence with the highest cosine similarity
+    answer = sentences[cosine_similarities.argmax()]
+    return answer
     
 ##### Testing #####
 # TODO: DELETE ONCE UP AND RUNNING
@@ -106,15 +135,23 @@ def _get_answer(question: str, file_path: str):
 
 ##### MAIN #####
 if __name__ == "__main__":   
-    sport = Sport.BASKETBALL
+    sport = Sport.ULTIMATE
     document_store_folder = os.path.join('..', DOCUMENT_STORE_FOLDER_PATH) 
     
-    question = "What is a travel?"
-    answer, context = query_document_store(question, sport, document_store_folder)
-    
+    question = "How many players are on each team?"
+    answer = query_document_store(question, sport, document_folder_path="../data/document_store")
+    #answer, context = query_document_store(question, sport, document_store_folder)
+
     print(f"Question: {question}")
-    print(f"Answer: {answer}")
-    print(f"Context: {context}")
+    print(f"Answer: {answer}\n")
+    
+    question2 = "What is the event organizer clause?"
+    answer2 = get_tfidf_answer(question2, sport, processed_data_folder_path="../data/processed_data")
+    #answer2, context2 = query_document_store(question, sport, document_store_folder)
+    
+    print(f"Question: {question2}")
+    print(f"Answer: {answer2}")
+    #print(f"Context: {context}")
     '''
     context_path = "../data/processed_data/usau_sample_rules_processed.txt"
     
