@@ -1,0 +1,13 @@
+
+
+
+# Load the data
+
+
+# TFIDF APPROACH
+
+
+# ELASTICSEARCH APPROACH
+
+
+# OPENAI GPT APPROACH
