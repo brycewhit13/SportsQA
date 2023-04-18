@@ -14,7 +14,6 @@ import string
 import requests
 from PyPDF2 import PdfReader
 from bs4 import BeautifulSoup
-
 from haystack.nodes import PreProcessor, DensePassageRetriever
 from haystack.document_stores import FAISSDocumentStore
 from haystack import Document
@@ -24,7 +23,9 @@ from azure.storage.blob import BlobServiceClient
 from Sport import Sport, get_league
 from constants import *
 
+########################################
 ##### FAISS Document Store Methods #####
+########################################
 def get_document_store(sport: Sport, document_folder_path=DOCUMENT_STORE_FOLDER_PATH):
     """Get the FAISSDocumentStore object if it exists, otherwise create it
 
@@ -36,16 +37,20 @@ def get_document_store(sport: Sport, document_folder_path=DOCUMENT_STORE_FOLDER_
     
     # Path to the index file
     index_path=os.path.join(document_folder_path, league, f"{league}_index.faiss")
-    
+    config_path=os.path.join(document_folder_path, league, f"{league}_index.json")
     # If the index file exist, load the FAISSDocumentStore object
     print(f"Checking if {index_path} exists...")
     if os.path.exists(index_path):
         print("Loading FAISSDocumentStore object...")
-        return FAISSDocumentStore.load(index_path=index_path)
+        return FAISSDocumentStore.load(index_path=index_path, config_path=config_path)
     print("Doesn't exist, creating FAISSDocumentStore object...")
     return FAISSDocumentStore(sql_url=f"sqlite:///{document_folder_path}/{league}/faiss_document_store.db", faiss_index_factory_str="Flat")
 
-##### Establish Azure Connection #####
+###########################
+##### Azure Functions #####
+###########################
+
+##### Download Function #####
 def establish_connection(container_name=CONTAINER_NAME):
     """Establishes a connection to the Azure blob storage system
     Args:
@@ -61,7 +66,6 @@ def establish_connection(container_name=CONTAINER_NAME):
     # Return the clients
     return blob_service_client, container_client
 
-##### Download Functions #####
 def download_raw_data(container_client, download_folder = os.path.join("..", "data", "raw_data")):
     """Downloads the raw data from the Azure blob storage system
 
@@ -175,7 +179,7 @@ def download_all_data(container_client):
     
     print("Download Complete!")
     
-    
+
 ##### Upload Functions #####
 def upload_file_to_azure(container_client, file_path, upload_folder):
     """Uploads a file to the Azure blob storage system
@@ -212,8 +216,9 @@ def upload_folder_to_azure(container_client, folder_path, upload_folder):
         # Upload the file
         upload_file_to_azure(container_client, file_path, upload_folder)
         
-        
+#####################################
 ##### Data Generation Functions #####
+#####################################
 def pdf_to_text(filename: str, sport: Sport, start_page: int = 0, end_page: int = None, origin_folder: str = RAW_DATA_FOLDER_PATH, dest_folder: str = TEXT_DATA_FOLDER_PATH):
     """Loads text from a pdf file and saves it to a txt file. You can specify the start and end pages to load
     and the resulting text is stored in the text_data folder with the output_name as the file name.
@@ -277,7 +282,9 @@ def scrape_ultimate_data(sport: Sport = Sport.ULTIMATE, dest_folder: str = TEXT_
     with open(os.path.join(dest_folder, output_name), 'w', encoding='utf-8') as f:
         f.write(text)
 
+########################################
 ##### Text Preprocessing Functions #####
+########################################
 def process_text(sport: Sport, remove_stopwords: bool = False, remove_punctuation: bool = False, origin_folder: str = TEXT_DATA_FOLDER_PATH, dest_folder: str = PROCESSED_DATA_FOLDER_PATH):
     """Processes the text data from the text_data folder and stores the results in the processed_data folder.
 
@@ -288,8 +295,7 @@ def process_text(sport: Sport, remove_stopwords: bool = False, remove_punctuatio
         dest_folder (str, optional): The folder to save the processed data to. Defaults to PROCESSED_DATA_FOLDER_PATH.
     """
     # Read in the data
-    data_file = os.path.join(origin_folder, get_league(sport, lower=True) + "_rules.txt")
-    data = _load_text_data(data_file)
+    data = load_text_data(sport, folder_path=origin_folder)
     
     # Make everything lowercase
     data_processed = data.lower()
@@ -297,9 +303,9 @@ def process_text(sport: Sport, remove_stopwords: bool = False, remove_punctuatio
     data_processed = data_processed.replace("[^a-zA-Z0-9_]", "")
     # Remove Stopwords and Punctuation if necessary
     if(remove_stopwords == True):
-        data_processed = _remove_stopwords(data_processed)
+        data_processed = " ".join([word for word in data.split() if word not in STOPWORDS_SET])
     if(remove_punctuation == True):
-        data_processed = _remove_punctuation(data_processed)
+        data_processed = " ".join([word for word in data.split() if word not in string.punctuation])
     if(remove_stopwords == False and remove_punctuation == False):
         data_processed = " ".join([word for word in data_processed.split()])
     
@@ -358,6 +364,9 @@ def chunk_processed_data(sport: Sport, split_length: int = 250, split_overlap: i
     document_store.save(index_path=os.path.join(document_folder, league, f"{league}_index.faiss"))
     
     
+###############################
+##### Load Data Functions #####
+###############################
 def load_processed_data(sport: Sport, folder_path: str = PROCESSED_DATA_FOLDER_PATH):
     """Loads the processed data from the processed_data folder
 
@@ -373,40 +382,17 @@ def load_processed_data(sport: Sport, folder_path: str = PROCESSED_DATA_FOLDER_P
         data = f.read()
     return data
 
-##### Helper Functions #####
-def _remove_stopwords(data):
-    """Removes stopwords from the data
-
-    Args:
-        data (str): The data to remove stopwords from
-
-    Returns:
-        data_processed (str): The data with stopwords removed
-    """
-    data_processed = " ".join([word for word in data.split() if word not in STOPWORDS_SET])
-    return data_processed
-
-def _remove_punctuation(data):
-    """Removes punctuation from the data
-
-    Args:
-        data (str): The data to remove punctuation from
-
-    Returns:
-        data_processed (str): The data with punctuation removed
-    """
-    data_processed = " ".join([word for word in data.split() if word not in string.punctuation])
-    return data_processed
-
-def _load_text_data(data_file: str):
+def load_text_data(sport: Sport, folder_path: str = TEXT_DATA_FOLDER_PATH):
     """Loads the text data from the given data txt file
 
     Args:
-        data_file (str): The file name of the data to load
+        sport (Sport): The sport to load the data for
+        folder_path (str, optional): The folder to load the data from. Defaults to PROCESSED_DATA_FOLDER_PATH.
 
     Returns:
         data (str): The processed text data as a string
     """
+    data_file = os.path.join(folder_path, get_league(sport, lower=True) + "_rules.txt")
     with open(data_file, 'r', encoding='utf-8') as f:
         data = f.read()
     return data
@@ -435,8 +421,6 @@ if __name__ == "__main__":
     pdf_to_text(filename='2022-2023-NBA-RULE-BOOK.pdf', sport=Sport.BASKETBALL, origin_folder=raw_folder, dest_folder=text_folder)
     print("Converting the WNBA data...")
     pdf_to_text(filename='2022-WNBA-RULE-BOOK-FINAL.pdf', sport=Sport.WOMENS_BASKETBALL, origin_folder=raw_folder, dest_folder=text_folder)
-    print("Converting the ICC data...")
-    pdf_to_text(filename='2020-ICC-Playing-Handbook.pdf', sport=Sport.CRICKET, origin_folder=raw_folder, dest_folder=text_folder)
     
     # Scrape the ultimate data
     print("Scraping the Ultimate Data...")

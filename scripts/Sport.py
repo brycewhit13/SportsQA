@@ -15,7 +15,6 @@ class Sport(Enum):
     HOCKEY = 'Hockey'
     BASKETBALL = 'Basketball'
     WOMENS_BASKETBALL = 'Womens Basketball'
-    CRICKET = 'Cricket'
     ULTIMATE = 'Ultimate'
     
 
@@ -36,8 +35,6 @@ def get_league(sport: Sport, lower: bool = True):
         league = 'NBA'
     elif sport.value == Sport.WOMENS_BASKETBALL.value:
         league = 'WNBA'
-    elif sport.value == Sport.CRICKET.value:
-        league = 'ICC'
     elif sport.value == Sport.ULTIMATE.value:
         league = 'USAU'
     else:
@@ -65,8 +62,6 @@ def get_sport_from_str(string: str):
         sport = Sport.BASKETBALL
     elif string == 'Womens Basketball':
         sport = Sport.WOMENS_BASKETBALL
-    elif string == 'Cricket':
-        sport = Sport.CRICKET
     elif string == 'Ultimate':
         sport = Sport.ULTIMATE
     else:
