@@ -1,7 +1,7 @@
 #########################################################################
 # Filename: app.py                                                      #
 # Author: Bryce Whitney                                                 #
-# Last Edit: 3/24/2023                                                  #
+# Last Edit: 4/24/2023                                                  #
 #                                                                       #
 # Description: Runs the web application with the question and answering #
 #########################################################################
@@ -11,7 +11,7 @@ import os
 from flask import Flask, render_template, request
 import sys
 sys.path.append("scripts")
-from scripts.question_answering import get_answer, query_document_store, gpt_answer_no_context
+from scripts.question_answering import get_answer, query_document_store, gpt_answer_no_context, gpt_answer_with_context
 from scripts.Sport import get_sport_from_str, get_league, get_official_rulebook
 
 # Initialize the Flask app
@@ -28,7 +28,7 @@ def result():
     sport = get_sport_from_str(request.args.get("radio"))
     
     # Get the answer to the question and return the result
-    answer = gpt_answer_no_context(question, sport)
+    answer = gpt_answer_with_context(question, sport)
     
     # Get the link to the official rulebook
     more_info_text = "If you want to explore the rules yourself, you can "
