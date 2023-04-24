@@ -1,1 +1,1 @@
-{"faiss_config_path": "..\\data\\document_store\\nba\\nba_index.json", "sql_url": "sqlite:///..\\data\\document_store/nba/faiss_document_store.db", "faiss_index_factory_str": "Flat", "embedding_dim": 768}
+{"sql_url": "sqlite:///..\\data\\document_store/nba/faiss_document_store.db", "faiss_index_factory_str": "Flat"}
