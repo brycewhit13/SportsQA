@@ -11,24 +11,39 @@ import os
 from flask import Flask, render_template, request
 import sys
 sys.path.append("scripts")
-from scripts.question_answering import get_answer, query_document_store
-from scripts.Sport import get_sport_from_str
+from scripts.question_answering import get_answer, query_document_store, gpt_answer_no_context
+from scripts.Sport import get_sport_from_str, get_league, get_official_rulebook
 
 # Initialize the Flask app
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html", qestion_display="", answer_display="")
+    return render_template("index.html", question_display="", answer_display="", nfl_checked="checked")
 
 @app.route("/result", methods=["GET"])
 def result():
-    question = request.args.get("question")    
-    sport = get_sport_from_str(request.args.get("sport"))   
-    answer, context = query_document_store(question, sport)
-
-    print(f"\nQuestion: {question}")
-    print(f"Answer: {answer}")
-    print(f"Context: {context}\n")
+    # Extract the sport and question from the request
+    question = request.args.get("question")
+    sport = get_sport_from_str(request.args.get("radio"))
     
-    return render_template("index.html", question_display=question, answer_display=answer)
+    # Get the answer to the question and return the result
+    answer = gpt_answer_no_context(question, sport)
+    
+    # Get the link to the official rulebook
+    more_info_text = "If you want to explore the rules yourself, you can "
+    link_text = "visit the official rulebook here."
+    link = get_official_rulebook(sport)
+    
+    # Determine which radio button should be checked
+    league = get_league(sport, lower=True)
+    if(league == "nfl"):
+        return render_template("index.html", question_display=question, answer_display=answer, nfl_checked="checked", link_text=link_text, link=link, more_info_text=more_info_text)
+    elif(league == "nhl"):
+        return render_template("index.html", question_display=question, answer_display=answer, nhl_checked="checked", link_text=link_text, link=link, more_info_text=more_info_text)
+    elif(league == "nba"):
+        return render_template("index.html", question_display=question, answer_display=answer, nba_checked="checked", link_text=link_text, link=link, more_info_text=more_info_text)
+    elif(league == "wnba"):
+        return render_template("index.html", question_display=question, answer_display=answer, wnba_checked="checked", link_text=link_text, link=link, more_info_text=more_info_text)
+    else:
+        return render_template("index.html", question_display=question, answer_display=answer, usau_checked="checked", link_text=link_text, link=link, more_info_text=more_info_text)
