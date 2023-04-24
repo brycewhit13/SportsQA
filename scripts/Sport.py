@@ -69,5 +69,29 @@ def get_sport_from_str(string: str):
     return sport
 
 
+def get_official_rulebook(sport: Sport):
+    """Gets the official rulebook for the given sport
+
+    Args:
+        sport (Sport): The sport to get the official rulebook for
+
+    Returns:
+        rulebook (str): The official rulebook for the given sport
+    """
+    if sport.value == Sport.FOOTBALL.value:
+        rulebook = 'https://operations.nfl.com/media/5kvgzyss/2022-nfl-rulebook-final.pdf'
+    elif sport.value == Sport.HOCKEY.value:
+        rulebook = 'https://cms.nhl.bamgrid.com/images/assets/binary/335473802/binary-file/file.pdf'
+    elif sport.value == Sport.BASKETBALL.value:
+        rulebook = 'https://ak-static.cms.nba.com/wp-content/uploads/sites/4/2022/10/Official-Playing-Rules-2022-23-NBA-Season.pdf'
+    elif sport.value == Sport.WOMENS_BASKETBALL.value:
+        rulebook = 'https://www.wnba.com/wnba-rule-book/'
+    elif sport.value == Sport.ULTIMATE.value:
+        rulebook = 'https://www.usaultimate.org/about/rules/'
+    else:
+        rulebook = None
+    return rulebook
+
+
 if __name__ == "__main__":
     print(get_league(Sport.FOOTBALL))
