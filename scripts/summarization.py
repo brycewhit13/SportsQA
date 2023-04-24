@@ -1,7 +1,7 @@
 ############################################################################################################
 # Filename: summarization.py                                                                               #
 # Author: Bryce Whitney                                                                                    #
-# Last Edit: 3/24/2023                                                                                     #
+# Last Edit: 4/24/2023                                                                                     #
 #                                                                                                          #
 # Description: This script contains methods for abstractive and extractive summarizations                  #                                                                            #
 #                                                                                                          #
@@ -9,18 +9,25 @@
 ############################################################################################################
 
 ##### Imports #####
-import os
 import numpy as np
 import networkx as nx
 from nltk import sent_tokenize
 from nltk.cluster.util import cosine_distance
 from sklearn.feature_extraction.text import TfidfVectorizer
-from text_preprocessing import load_processed_data, _remove_stopwords
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
+from data_processing import load_processed_data
+from constants import STOPWORDS_SET
+
+####################################
 ##### Extractive Summarization #####
-def extractive_summarization(datafile, top_n=5):
+####################################
+def extractive_summarization(datafile: str, top_n: int = 5):
     """Performs extractive summarization on the rulebooks using the TextRank method
+    
+    Args:
+        datafile (str): The path to the datafile
+        top_n (int): The number of sentences to include in the summary. Defaults to 5.
     """
     # Read in the data
     print("loading data...")
@@ -28,7 +35,7 @@ def extractive_summarization(datafile, top_n=5):
     
     # Remove stopwords
     print("processing data...")
-    data_no_stopwords = _remove_stopwords(data)
+    data_no_stopwords = " ".join([word for word in data.split() if word not in STOPWORDS_SET])
     
     # Extract sentences
     sentences_extracted = sent_tokenize(data)
@@ -51,7 +58,7 @@ def extractive_summarization(datafile, top_n=5):
     return summary
     
     
-def tfidf_vectorize(sentences):
+def tfidf_vectorize(sentences: list):
     """Calculates the tfidf vector for each sentence
     
     Args:
@@ -68,7 +75,7 @@ def tfidf_vectorize(sentences):
     # Return the features
     return feature_vecs
     
-def word_count_vectorize(sentences):
+def word_count_vectorize(sentences: list):
     """Calculates the word count vector for each sentence
     
     Args:
@@ -92,7 +99,7 @@ def word_count_vectorize(sentences):
     # Return the feature vectors
     return feature_vecs
 
-def generate_similarity_matrix(feature_vecs):
+def generate_similarity_matrix(feature_vecs: list):
     """Generates the similarity matrix for the sentences
     
     Args:
@@ -114,7 +121,7 @@ def generate_similarity_matrix(feature_vecs):
     # Return the similarity matrix
     return similarity_matrix
     
-def pagerank_summarization(sentences, similarity_matrix, top_n=5):
+def pagerank_summarization(sentences: list, similarity_matrix, top_n: int = 5):
     """Applies the PageRank algorithm to the similarity matrix to get the most important sentences
     from the corpus to generate a representative summary
 
@@ -145,9 +152,11 @@ def pagerank_summarization(sentences, similarity_matrix, top_n=5):
 
     return summary
 
+#####################################
 ##### Abstractive Summarization #####
+#####################################
 
-def generative_summary(text_data, min_summary_length=10, max_summary_length=200):
+def generative_summary(text_data: str, min_summary_length: int = 10, max_summary_length: int = 200):
     """Generates a summary of the input text using the HuggingFace model sshleifer/distilbart-cnn-12-6
 
     Args:
@@ -163,14 +172,12 @@ def generative_summary(text_data, min_summary_length=10, max_summary_length=200)
     tokenizer = AutoTokenizer.from_pretrained("sshleifer/distilbart-cnn-12-6")
     
     # Generate and return the summary
-    summary = chunked_summary(input_text=text_data, model=model, tokenizer=tokenizer, min_chunk_len=10, max_chunk_len=200)
+    summary = chunked_summary(input_text=text_data, model=model, tokenizer=tokenizer, min_chunk_len=min_summary_length, max_chunk_len=max_summary_length)
     
-    print(f'Length of the source document: {len(text_data)}')
-    print(f'Length of the summary: {len(summary)}')
-    
+    # Return the summary
     return summary
     
-def truncate_summary(input_text, model, tokenizer, min_length, max_length):
+def truncate_summary(input_text: str, model: AutoModelForSeq2SeqLM, tokenizer: AutoTokenizer, min_length: int, max_length: int):
     """Truncates the summary to the desired length
 
     Args:
@@ -187,8 +194,7 @@ def truncate_summary(input_text, model, tokenizer, min_length, max_length):
     outputs = model.generate(inputs["input_ids"], max_length=max_length, min_length=min_length, length_penalty=1.0, num_beams=4, early_stopping=True)
     return tokenizer.decode(outputs[0])
 
-
-def chunked_summary(input_text, model, tokenizer, min_chunk_len, max_chunk_len):
+def chunked_summary(input_text: str, model: AutoModelForSeq2SeqLM, tokenizer: AutoTokenizer, min_chunk_len: int, max_chunk_len: int):
     """Split the input text into chunks of 1024 and generate a summary for each chunk.
     These chunks are then concatenated to form the final summary.
 
