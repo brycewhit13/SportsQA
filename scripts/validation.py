@@ -6,7 +6,6 @@
 # Description: Script to perform validation on the different approaches #                                                                                                                                #
 #########################################################################
 
-
 ##### Imports #####
 import os
 import pandas as pd
@@ -28,6 +27,7 @@ if __name__ == "__main__":
     extractive_pipeline_answers = []
     extractive_pipeline_context = []
     openai_gpt_answers = []
+    gpt_answers_no_context = []
     
     # Loop through the questions and get the answers
     for i, (question, sport_name) in enumerate(zip(question_list, sports_list)):
@@ -45,6 +45,9 @@ if __name__ == "__main__":
         gpt_ans = gpt_answer_with_context(question, sport, summary_folder=os.path.join("..","data", "summary"))
         openai_gpt_answers.append(gpt_ans)
         
+        gpt_ans_no_context = gpt_answer_no_context(question, sport, summary_folder=os.path.join("..","data", "summary"))
+        gpt_answers_no_context.append(gpt_ans_no_context)
+        
         if i % 10 == 0:
             print(f"Finished {i}/{len(question_list)} questions")
         
@@ -55,5 +58,8 @@ if __name__ == "__main__":
     extract_df = pd.DataFrame({"Question":question_list, "Sport":sports_list, "Answer":extractive_pipeline_answers, "Context":extractive_pipeline_context})
     extract_df.to_csv(os.path.join(validation_folder, "extractive_pipeline_answers.csv"))
     
-    gpt_df = pd.DataFrame({"Question":question_list, "Sport":sports_list, "Answer":openai_gpt_answers})
-    gpt_df.to_csv(os.path.join(validation_folder, "gpt_answers_with_context.csv"))    
+    gpt_context_df = pd.DataFrame({"Question":question_list, "Sport":sports_list, "Answer":openai_gpt_answers})
+    gpt_context_df.to_csv(os.path.join(validation_folder, "gpt_answers_with_context.csv"))   
+    
+    gpt_no_context_df = pd.DataFrame({"Question":question_list, "Sport":sports_list, "Answer":gpt_answers_no_context})
+    gpt_no_context_df.to_csv(os.path.join(validation_folder, "gpt_answers_no_context.csv")) 
