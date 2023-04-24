@@ -1,0 +1,62 @@
+,Question,Sport,Answer
+0,How many players does the offesne have?,Football,12
+1,How many players are on the defense?,Football,12
+2,How long is the field?,Football,360 feet
+3,How long is the end zone?,Football,six feet
+4,How long is a game only counting playing time?,Football,60 minutes
+5,What starts the second half of a game?,Football,two-minute warning
+6,How long is the halftime break?,Football,13 minutes
+7,Does the clock stop when a player goes out of bounds?,Football,the game clock operator shall start and stop the clock upon the signal of any official in accordance with the rules
+8,Who gets possession of the ball in overtime?,Football,b2
+9,Where does kickoff take place?,Football,a35
+10,What do you call the position on the field where a play begins?,Football,huddle a huddle
+11,How many ways can you score points in football?,Football,3
+12,How many time outs does a team get per half?,Football,three
+13,How long does a team have between plays?,Football,60 minutes
+14,Which referee has the power to make the final decision?,Football,the referee
+15,How many points is a touchdown worth?,Football,6
+16,What constitues a false start penalty?,Football,loss of five yards from the line of scrimmage
+17,What is the penalty called for hitting the punter after they have already punted the ball?,Football,loss of 15 yards. (unsportsmanlike conduct
+18,How do you start an NBA game?,Basketball,a jump ball in the center circle
+19,What is an infraction made by a player called?,Basketball,conduct technical foul
+20,How many points is a free throw worth?,Basketball,one
+21,How many points is a shot worth?,Basketball,one
+22,How long is an NBA quarter?,Basketball,twelve minutes
+23,How much time is on the NBA shot clock?,Basketball,twelve minutes
+24,How long is NBA overtime?,Basketball,two minutes
+25,What is a rebound?,Basketball,in the backcourt
+26,How many players are allowed on the court for one team?,Basketball,five
+27,What are the dimensions of an NBA basketball court?,Basketball,the entire midcourt line and the rest of the court to include the opponent’s basket and inbounds part of the backboard
+28,How far back from the backboard is the free throw line?,Basketball,15’
+29,What is a double dribble?,Basketball,movement of the ball
+30,What is the restricted zone?,Basketball,the area bounded by an arc with a 4-foot radius measured from the center of the basket ring
+31,What type of fould is called when neither team has possesion of the ball?,Basketball,a traveling violation
+32,How mnay fouls can an individual player get in a game before being ejected?,Basketball,instant replay review
+33,What is a flagrant foul?,Basketball,unnecessary contact committed by a player against an opponent
+34,How does a game begin?,Hockey,line -up
+35,Where is a player who commits a penalty sent?,Hockey,the dressing room
+36,Is it possible for a player to return to play from the penalty box before their time is up?,Hockey,no substitute shall be permitted
+37,What is a match penalty?,Hockey,50.4
+38,What happens if a player is assesed a match penalty?,Hockey,the player shall be automatically suspended from further competition
+39,What is a charging penalty?,Hockey,"the actions of a player who, as a result of distance traveled, shall violently check an opponent in any manner"
+40,What is the penalty for hitting your opponent with your stick?,Hockey,60.4 match penalty
+41,Can a player play with two sticks in the NHL?,Hockey,a player may not participate in the play using a goalkeeper’s stick
+42,How long is a period in the NHL?,Hockey,34.5start of periods
+43,How many people can be on the ice for each team including the goalie?,Hockey,1.8
+44,How many people are on the field at one time for a team?,Ultimate,seven
+45,What is the event orginizers clause?,Ultimate,reinitiate the stall count means to start over
+46,Do you have to use a frisbee to play?,Ultimate,the thrower fails to touch the disc to the ground when required
+47,What is the standard weight of the disc?,Ultimate,15.a.5.a.3
+48,What is spirit of the game?,Ultimate,sotg
+49,What is hard cap?,Ultimate,a team must have a minimum of two players and a maximum of seven players on the field
+50,How many timeouts does each team get per half in a standard game?,Ultimate,two
+51,What is an injury timeout?,Ultimate,a timeout called for a player injury
+52,What is the stall count?,Ultimate,"plus one, or 9 if over 8"
+53,How many points are needed to win a game of Ultimate Frisbee?,Ultimate,seven
+54,How many WNBA teams are there?,Womens Basketball,five
+55,How long is a quarter in the WNBA?,Womens Basketball,ten minutes
+56,How many points is a free throw worth?,Womens Basketball,one
+57,How many fouls can an individual player get in a game before being ejected?,Womens Basketball,two
+58,What is a screen?,Womens Basketball,"the legal action of a player who, without ca using undue contact, delay s or prevents an opponent from re aching a desired position"
+,,,
+,,,20 / 59 correct
