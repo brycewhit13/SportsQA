@@ -1,7 +1,7 @@
 ####################################################################
 # Filename: get_data.py                                            #
 # Author: Bryce Whitney                                            #
-# Last Edit: 4/4/2023                                              #
+# Last Edit: 4/24/2023                                             #
 #                                                                  #
 # Description: Contains functions for generating the data and      #
 # uploading / downloading it from the Azure blob storage system.   #
@@ -18,7 +18,7 @@ from haystack.nodes import PreProcessor, DensePassageRetriever
 from haystack.document_stores import FAISSDocumentStore
 from haystack import Document
 
-from azure.storage.blob import BlobServiceClient
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 from Sport import Sport, get_league
 from constants import *
@@ -45,177 +45,7 @@ def get_document_store(sport: Sport, document_folder_path=DOCUMENT_STORE_FOLDER_
         return FAISSDocumentStore.load(index_path=index_path, config_path=config_path)
     print("Doesn't exist, creating FAISSDocumentStore object...")
     return FAISSDocumentStore(sql_url=f"sqlite:///{document_folder_path}/{league}/faiss_document_store.db", faiss_index_factory_str="Flat")
-
-###########################
-##### Azure Functions #####
-###########################
-
-##### Download Function #####
-def establish_connection(container_name=CONTAINER_NAME):
-    """Establishes a connection to the Azure blob storage system
-    Args:
-        container_name (str, optional): Name of the container to connect to. Defaults to "sports-data".
-        
-    Returns:
-        tuple: A tuple containing the BlobServiceClient and ContainerClient objects
-    """
-    # Create the BlobServiceClient and ContainerClient objects
-    blob_service_client = BlobServiceClient.from_connection_string(os.getenv("AZURE_STORAGE_CONNECTION_STRING"))
-    container_client = blob_service_client.get_container_client(container_name)
-    
-    # Return the clients
-    return blob_service_client, container_client
-
-def download_raw_data(container_client, download_folder = os.path.join("..", "data", "raw_data")):
-    """Downloads the raw data from the Azure blob storage system
-
-    Args:
-        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
-        download_folder (str, optional): path. Defaults to "../data/raw_data").
-    """
-    # If download folder doesn't exist, create it
-    if not os.path.exists(download_folder):
-        os.makedirs(download_folder)
-    
-    # List the blobs in the raw-data container
-    blob_list = container_client.list_blobs(name_starts_with="raw-data")
-    
-    # For each file
-    for blob in blob_list:
-        file_name = os.path.split(blob.name)[1]
-        download_path = os.path.join(download_folder, file_name)
-
-        # Download the file
-        with open(file=download_path, mode="wb") as download_file:
-            download_file.write(container_client.download_blob(blob.name).readall())
-
-def download_text_data(container_client, download_folder = os.path.join("..", "data", "text_data")):
-    """Downloads the text data from the Azure blob storage system
-
-    Args:
-        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
-        download_folder (str, optional): path. Defaults to "../data/text_data").
-    """
-    # If download folder doesn't exist, create it
-    if not os.path.exists(download_folder):
-        os.makedirs(download_folder)
-        
-    # List the blobs in the text-data container
-    blob_list = container_client.list_blobs(name_starts_with="text-data")
-    
-    # For each file
-    for blob in blob_list:
-        file_name = os.path.split(blob.name)[1]
-        download_path = os.path.join(download_folder, file_name)
-
-        # Download the file
-        with open(file=download_path, mode="wb") as download_file:
-            download_file.write(container_client.download_blob(blob.name).readall())
-
-def download_processed_data(container_client, download_folder = os.path.join("..", "data", "processed_data")):
-    """Downloads the processed data from the Azure blob storage system
-
-    Args:
-        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
-        download_folder (str, optional): path. Defaults to "../data/processed_data").
-    """
-    # If download folder doesn't exist, create it
-    if not os.path.exists(download_folder):
-        os.makedirs(download_folder)
-        
-    # List the blobs in the processed-data container
-    blob_list = container_client.list_blobs(name_starts_with="processed-data")
-    
-    # For each file
-    for blob in blob_list:
-        file_name = os.path.split(blob.name)[1]
-        download_path = os.path.join(download_folder, file_name)
-
-        # Download the file
-        with open(file=download_path, mode="wb") as download_file:
-            download_file.write(container_client.download_blob(blob.name).readall())
-
-def download_document_store(container_client, download_folder = DOCUMENT_STORE_FOLDER_PATH):
-    """Downloads the document store from the Azure blob storage system
-
-    Args:
-        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
-        download_folder (str, optional): path. Defaults to DOCUMENT_STORE_FOLDER_PATH).
-    """
-    # If download folder doesn't exist, create it
-    if not os.path.exists(download_folder):
-        os.makedirs(download_folder)
-        
-    # List the blobs in the document-store container
-    blob_list = container_client.list_blobs(name_starts_with="document-store")
-    
-    # For each file
-    for blob in blob_list:
-        file_name = os.path.split(blob.name)[1]
-        download_path = os.path.join(download_folder, file_name)
-
-        # Download the file
-        with open(file=download_path, mode="wb") as download_file:
-            download_file.write(container_client.download_blob(blob.name).readall())
-            
-def download_all_data(container_client):
-    """Downloads all of the data from the Azure blob storage system
-    
-    Args:
-        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
-    """
-    
-    print("Downloading the raw data...")
-    download_raw_data(container_client)
-    
-    print("Downloading the text data...")
-    download_text_data(container_client)
-    
-    print("Downloading the processed data...")
-    download_processed_data(container_client)
-    
-    print("Downloading Document Store...")
-    download_document_store(container_client)
-    
-    print("Download Complete!")
-    
-
-##### Upload Functions #####
-def upload_file_to_azure(container_client, file_path, upload_folder):
-    """Uploads a file to the Azure blob storage system
-
-    Args:
-        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
-        file_path (str): path to the file to upload
-        upload_folder (str): name of the folder to upload the file to
-    """
-    # Get the file name
-    file_name = os.path.split(file_path)[1]
-    
-    # Upload the file
-    with open(file=file_path, mode="rb") as data:
-        container_client.upload_blob(name=os.path.join(upload_folder, file_name), data=data)
-        
-        
-def upload_folder_to_azure(container_client, folder_path, upload_folder):
-    """Uploads a folder to the Azure blob storage system
-
-    Args:
-        container_client (ContainerClient): ContainerClient object connected to the azure blob storage system
-        folder_path (str): path to the folder to upload
-        upload_folder (str): name of the folder to upload the file to
-    """
-    # List the files in the folder
-    file_list = os.listdir(folder_path)
-    
-    # For each file
-    for file_name in file_list:
-        # Get the full file path
-        file_path = os.path.join(folder_path, file_name)
-        
-        # Upload the file
-        upload_file_to_azure(container_client, file_path, upload_folder)
-        
+   
 #####################################
 ##### Data Generation Functions #####
 #####################################
@@ -329,6 +159,10 @@ def chunk_processed_data(sport: Sport, split_length: int = 250, split_overlap: i
     document_store = get_document_store(sport, document_folder_path=document_folder)
     league = get_league(sport, lower=True)
     
+    # Delete any existing documents in the document store
+    if(document_store.get_document_count() > 0):
+        document_store.delete_documents()
+    
     # Load the processed data
     text = load_processed_data(sport, folder_path=processed_data_folder)
     document = Document(content=text, content_type="text", meta={"name": league + "_rules"})
@@ -364,6 +198,103 @@ def chunk_processed_data(sport: Sport, split_length: int = 250, split_overlap: i
     document_store.save(index_path=os.path.join(document_folder, league, f"{league}_index.faiss"))
     
     
+def summarize_rules(sport: Sport, min_length: int = 1000, max_length: int = 2250, processed_folder: str = PROCESSED_DATA_FOLDER_PATH, summary_folder: str = SUMMARY_FOLDER_PATH):
+    """Summarizes the rules for the sport and saves the summary to the summary folder. 
+    The length of the summary is between min_length and max_length
+
+    Args:
+        sport (Sport): The sport to summarize the rules for
+        min_length (int, optional): The minimum length of the summary. Defaults to 1000.
+        max_length (int, optional): The maximum length of the summary. Defaults to 2250.
+        processed_folder (str, optional): Path to the processed data folder. Defaults to PROCESSED_DATA_FOLDER_PATH.
+        summary_folder (str, optional): Path to the summary folder where the summaries will be saved. Defaults to SUMMARY_FOLDER_PATH.
+    """
+    # Load the processed data
+    data = load_processed_data(sport, folder_path=processed_folder)
+    
+    # initialize model and tokenizer
+    model = AutoModelForSeq2SeqLM.from_pretrained("sshleifer/distilbart-cnn-12-6")
+    tokenizer = AutoTokenizer.from_pretrained("sshleifer/distilbart-cnn-12-6")
+
+    # Separate the  text into chunks
+    data = data.split(' ')
+    chunked_inputs = [data[i:i+1024] for i in range(0,len(data),1024)]
+    summary = ''
+    
+    # Determine the minimum and maximum chunk length
+    min_chunk_length = min_length // len(chunked_inputs)
+    max_chunk_length = max_length // len(chunked_inputs)
+    
+    # Get input for each chunk
+    for i, chunk in enumerate(chunked_inputs):
+        print(f"Summarizing chunk {i+1} of {len(chunked_inputs)}")
+        chunk = ' '.join(chunk)
+        chunk_summary = truncate_summary(chunk,model,tokenizer,min_chunk_length,max_chunk_length)
+        chunk_summary = chunk_summary.split('</s>')[-2].split('<s>')[-1].strip()
+        summary += (' '+chunk_summary)
+    
+    # Save the summary to a file
+    save_file_path = os.path.join(summary_folder, get_league(sport, lower=True) + "_summary.txt")
+    with open(save_file_path, 'w', encoding='utf-8') as f:
+        f.write(summary)
+
+def summarize_summaries(sport: Sport, min_length: int = 1000, max_length: int = 2250, summary_folder: str = SUMMARY_FOLDER_PATH, save_folder: str = FINAL_SUMMARIES_FOLDER_PATH):
+    """Takes the summaries for the sport and does another round of summarization to decrease the length even further. 
+    This is most useful for decreasing the number of tokens so an all-encompassing summary can be used in a single GPT query. 
+
+    Args:
+        sport (Sport): The sport to summarize the summaries for
+        min_length (int, optional): The minimum length of the summary. Defaults to 1000.
+        max_length (int, optional): The maximum length of the summary. Defaults to 2250.
+        summary_folder (str, optional): Path to the folder where the summaries are stored. Defaults to SUMMARY_FOLDER_PATH.
+        save_folder (str, optional): Path to the folder where the new summaries will be saved. Defaults to FINAL_SUMMARIES_FOLDER_PATH.
+    """
+    # Load the summary
+    big_summary = load_summary_data(sport, folder_path=summary_folder)
+    
+    # initialize model and tokenizer
+    model = AutoModelForSeq2SeqLM.from_pretrained("sshleifer/distilbart-cnn-12-6")
+    tokenizer = AutoTokenizer.from_pretrained("sshleifer/distilbart-cnn-12-6")
+    
+    # Separate the  text into chunks
+    big_summary = big_summary.split(' ')
+    chunked_inputs = [big_summary[i:i+1024] for i in range(0,len(big_summary),1024)]
+    summary = ''
+    
+    # Determine the minimum and maximum chunk length
+    min_chunk_length = min_length // len(chunked_inputs)
+    max_chunk_length = max_length // len(chunked_inputs)
+    
+    # Get input for each chunk
+    for i, chunk in enumerate(chunked_inputs):
+        print(f"Summarizing chunk {i+1} of {len(chunked_inputs)}")
+        chunk = ' '.join(chunk)
+        chunk_summary = truncate_summary(chunk,model,tokenizer,min_chunk_length,max_chunk_length)
+        chunk_summary = chunk_summary.split('</s>')[-2].split('<s>')[-1].strip()
+        summary += (' '+chunk_summary)
+    
+    # Save the summary to a file
+    save_file_path = os.path.join(save_folder, get_league(sport, lower=True) + "_summary_final.txt")
+    with open(save_file_path, 'w', encoding='utf-8') as f:
+        f.write(summary)
+
+def truncate_summary(input_text: str, model: AutoModelForSeq2SeqLM, tokenizer: AutoTokenizer, min_length: int, max_length: int):
+    """A helper function to truncate the summary to a certain length
+
+    Args:
+        input_text (str): The text to summarize
+        model (AutoModelForSeq2SeqLM): The model that is used to summarize the text
+        tokenizer (AutoTokenizer): The tokenizer model that is used to tokenize the text
+        min_length (int): The minimum length of the summary
+        max_length (int): The maximum length of the summary
+
+    Returns:
+        str: The summarized text
+    """
+    inputs = tokenizer(input_text, return_tensors="pt", max_length=1024, truncation=True)
+    outputs = model.generate(inputs["input_ids"], max_length=max_length, min_length=min_length, length_penalty=1.0, num_beams=4, early_stopping=True)
+    return tokenizer.decode(outputs[0])
+    
 ###############################
 ##### Load Data Functions #####
 ###############################
@@ -397,8 +328,24 @@ def load_text_data(sport: Sport, folder_path: str = TEXT_DATA_FOLDER_PATH):
         data = f.read()
     return data
 
+def load_summary_data(sport: Sport, folder_path: str = SUMMARY_FOLDER_PATH):
+    """Loads the summary data from the given data txt file
 
+    Args:
+        sport (Sport): The sport to load the data for
+        folder_path (str, optional): The folder to load the data from. Defaults to PROCESSED_DATA_FOLDER_PATH.
+
+    Returns:
+        data (str): The processed text data as a string
+    """
+    data_file = os.path.join(folder_path, get_league(sport, lower=True) + "_summary.txt")
+    with open(data_file, 'r', encoding='utf-8') as f:
+        data = f.read()
+    return data
+
+#################
 ##### Main ######
+#################
 if __name__ == "__main__":
     ##################################
     # Pipleline from start to finish #
@@ -409,8 +356,8 @@ if __name__ == "__main__":
     text_folder = os.path.join('..', TEXT_DATA_FOLDER_PATH)
     processed_folder = os.path.join('..', PROCESSED_DATA_FOLDER_PATH)
     document_store_folder = os.path.join('..', DOCUMENT_STORE_FOLDER_PATH)
+    summary_folder = os.path.join('..', SUMMARY_FOLDER_PATH)
     
-    '''
     # Convert the pdf data to text data
     print("Converting the pdf data to text data...")
     print("Converting the NFL data...")
@@ -425,12 +372,17 @@ if __name__ == "__main__":
     # Scrape the ultimate data
     print("Scraping the Ultimate Data...")
     scrape_ultimate_data(sport=Sport.ULTIMATE, dest_folder=text_folder)
-    '''
+    
     # Process the text data
     for sport in Sport:
         print(f"Processing {sport.value} Rules...")
         process_text(sport, origin_folder=text_folder, dest_folder=processed_folder)
         
         print(f"Chunking {sport.value} Rules...")
-        chunk_processed_data(sport, split_length=2000, split_overlap=100, processed_data_folder=processed_folder, document_folder=document_store_folder)
+        chunk_processed_data(sport, split_length=250, split_overlap=50, processed_data_folder=processed_folder, document_folder=document_store_folder)
         
+        print(f"Summarizing {sport.value} Rules...")
+        summarize_rules(sport, min_length=1000, max_length=10_000, processed_folder=processed_folder, summary_folder=summary_folder)
+        
+        print(f"Further Summarizing {sport.value} Rules...")
+        summarize_summaries(sport)
