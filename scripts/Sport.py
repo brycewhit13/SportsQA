@@ -1,7 +1,7 @@
 #############################################################################
 # Filename: Sport.py                                                        #
 # Author: Bryce Whitney                                                     #
-# Last Edit: 3/24/2023                                                      #
+# Last Edit: 4/24/2023                                                      #
 #                                                                           #
 # Description: A file containing definitions and methods for the Sport enum #
 #############################################################################
@@ -91,7 +91,3 @@ def get_official_rulebook(sport: Sport):
     else:
         rulebook = None
     return rulebook
-
-
-if __name__ == "__main__":
-    print(get_league(Sport.FOOTBALL))
