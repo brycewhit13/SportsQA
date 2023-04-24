@@ -6,13 +6,17 @@
 # Description: Runs the web application with the question and answering #
 #########################################################################
 
-# Imports
-import os
+##### Imports #####
 from flask import Flask, render_template, request
 import sys
 sys.path.append("scripts")
+
 from scripts.question_answering import get_answer, query_document_store, gpt_answer_no_context, gpt_answer_with_context
 from scripts.Sport import get_sport_from_str, get_league, get_official_rulebook
+
+#############################
+##### App Functionality #####
+#############################
 
 # Initialize the Flask app
 app = Flask(__name__, static_folder='static', template_folder='templates')
