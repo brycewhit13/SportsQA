@@ -12,8 +12,6 @@ import nltk
 import sys
 sys.path.append('scripts')
 
-from scripts.constants import TEXT_DATA_FOLDER_PATH, PROCESSED_DATA_FOLDER_PATH, RAW_DATA_FOLDER_PATH, DOCUMENT_STORE_FOLDER_PATH
-
 # Install the necessary libraries
 print("Installing the necessary libraries...")
 os.system("pip install -r requirements.txt")
