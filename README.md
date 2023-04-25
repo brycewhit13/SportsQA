@@ -67,7 +67,7 @@ To run the app locally, follow the steps below:
     - **NOTE**: There is a minor charge of about 1 cent for every question that is asked, so beware of this if you are using your own API key.  
 2. Install all the requirements with `pip install -r requirements.txt`
 
-3. Run the command `flask run` and go to ()[https://127.0.0.1:5000/]. After that, you should be able to use the app without any issues.
+3. Run the command `flask run` and go to [](https://127.0.0.1:5000/). After that, you should be able to use the app without any issues.
 
 ### Online
 
