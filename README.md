@@ -57,6 +57,10 @@ This approach was able to answer some questions correctly, but also got a lot wr
 
 Finally I experimented with using OpenAI's GPT-3.5 model to answer questions. Originally I did not provide the model any context about the rules, and it was able to answer **52 / 59** questions correct. A massive improvement! To try and improve this, I created generative summaries for each rulebook that can be passed as context to the model. These summaries are around 2000-2500 words each because I wanted to keep it to a single query when using the GPT-3.5 model. This additional context was able to improve the results and correctly answered **55/59** questions from the validation set. This is the approach implemented in the flask application.
 
+## Validation
+
+Each of the approaches above was evaluated using the same set of questions, which can be found in `validation/test_questions.csv`. For each of these approaches, I ran the `validation.py` python script and manually evaluated whether the answers were correct or incorrect. Each sport is represented in the set of questions, with Women's Basketball appearing the least because the vast majority of the rules in the WNBA are the same as the NBA.
+
 ## Running the App
 
 ### Locally
