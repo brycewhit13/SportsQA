@@ -19,5 +19,4 @@ Support is currently available for the current sports and leagues:
 - American Football (NFL)
 - Hockey (NHL)
 - Basketball (NBA and WNBA)
-- Cricket (ICC)
 - Ultimate (USAU)
