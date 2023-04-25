@@ -7,7 +7,7 @@
 #########################################################################
 
 ##### Imports #####
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 import sys
 sys.path.append("scripts")
 
@@ -22,7 +22,7 @@ from scripts.Sport import get_sport_from_str, get_league, get_official_rulebook
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
 # Starting page
-@app.route("/", methods=["GET"])
+@app.route("/")
 def index():
     return render_template("index.html", question_display="", answer_display="", nfl_checked="checked")
 
@@ -52,3 +52,6 @@ def result():
         return render_template("index.html", question_display=question, answer_display=answer, wnba_checked="checked", link_text=link_text, link=link, more_info_text=more_info_text)
     else:
         return render_template("index.html", question_display=question, answer_display=answer, usau_checked="checked", link_text=link_text, link=link, more_info_text=more_info_text)
+    
+if __name__ == "__main__":
+    app.run(host='127.0.0.1', port=5000, debug=True)
