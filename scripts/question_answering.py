@@ -15,11 +15,8 @@ import openai
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from haystack import Pipeline
-from haystack.document_stores import InMemoryDocumentStore
-from haystack.nodes import BM25Retriever, FARMReader, DensePassageRetriever, RAGenerator
-from haystack.pipelines.standard_pipelines import TextIndexingPipeline
-from haystack.pipelines import ExtractiveQAPipeline, GenerativeQAPipeline
+from haystack.nodes import FARMReader, DensePassageRetriever
+from haystack.pipelines import ExtractiveQAPipeline
 
 from constants import PROCESSED_DATA_FOLDER_PATH, DOCUMENT_STORE_FOLDER_PATH, FINAL_SUMMARIES_FOLDER_PATH
 from Sport import Sport, get_league
