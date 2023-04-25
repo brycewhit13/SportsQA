@@ -21,6 +21,7 @@ from scripts.Sport import get_sport_from_str, get_league, get_official_rulebook
 # Initialize the Flask app
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
+# Starting page
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html", question_display="", answer_display="", nfl_checked="checked")
