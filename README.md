@@ -70,3 +70,5 @@ To run the app locally, follow the steps below:
 3. Run the command `flask run` and go to ()[https://127.0.0.1:5000/]. After that, you should be able to use the app without any issues.
 
 ### Online
+
+ You can test out the application online [here](http://sports-rules-clarifications.azurewebsites.net/)
