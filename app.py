@@ -11,7 +11,7 @@ from flask import Flask, render_template, request
 import sys
 sys.path.append("scripts")
 
-from scripts.question_answering import get_answer, query_document_store, gpt_answer_no_context, gpt_answer_with_context
+from scripts.question_answering import gpt_answer_with_context
 from scripts.Sport import get_sport_from_str, get_league, get_official_rulebook
 
 #############################
