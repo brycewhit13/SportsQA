@@ -1,5 +1,7 @@
 # imports
 import os
+from PyPDF2 import PdfReader
+
 from constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER
 
 # Basketball Classes
@@ -12,6 +14,17 @@ class NBA_Basketball():
         self.league_name = 'NBA'
         self.sport_name = 'Basketball'
         
+    
+    def load_raw_text(self):
+        # Instantiate PDF Reader
+        pdf_reader = PdfReader(self.raw_data_path)
+        
+        # Extract Text
+        raw_text = ''
+        for page in pdf_reader.pages:
+            raw_text += page.extract_text()
+        return raw_text
+        
 
 class WNBA_Basketball():
     
@@ -21,3 +34,14 @@ class WNBA_Basketball():
         self.online_link = 'https://cdn.wnba.com/league/2022/05/2022-WNBA-RULE-BOOK-FINAL.pdf'
         self.league_name = 'WNBA'
         self.sport_name = 'Basketball'
+    
+    
+    def load_raw_text(self):
+        # Instantiate PDF Reader
+        pdf_reader = PdfReader(self.raw_data_path)
+        
+        # Extract Text
+        raw_text = ''
+        for page in pdf_reader.pages:
+            raw_text += page.extract_text()
+        return raw_text
