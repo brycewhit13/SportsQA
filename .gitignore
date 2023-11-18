@@ -128,5 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Files used for testing during development
-usau_sample_rules_processed.txt
+# Ignore the data
+data/*
