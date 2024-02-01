@@ -20,3 +20,9 @@ class Sport(Enum):
     NBA = NBA_Basketball
     WNBA = WNBA_Basketball
     USAU = USAU_Ultimate
+    
+    def names():
+        return [sport.name for sport in Sport]
+    
+    def values():
+        return [sport.value for sport in Sport]
