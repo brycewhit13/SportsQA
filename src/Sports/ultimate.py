@@ -3,7 +3,8 @@ import os
 import requests
 from bs4 import BeautifulSoup
 
-from constants import RAW_DATA_FOLDER
+# Constants
+RAW_DATA_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'raw')
 
 # Ultimate Classes
 class USAU_Ultimate():

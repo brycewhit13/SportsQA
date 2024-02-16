@@ -1,10 +1,10 @@
 # Imports
 from enum import Enum
 
-from Sports.football import NFL_Football
-from Sports.hockey import NHL_Hockey
-from Sports.basketball import NBA_Basketball, WNBA_Basketball
-from Sports.ultimate import USAU_Ultimate
+from src.Sports.football import NFL_Football
+from src.Sports.hockey import NHL_Hockey
+from src.Sports.basketball import NBA_Basketball, WNBA_Basketball
+from src.Sports.ultimate import USAU_Ultimate
 
 # Create Objects to pass into the Enum
 NFL_Football = NFL_Football()

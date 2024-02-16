@@ -2,7 +2,8 @@
 import os
 from PyPDF2 import PdfReader
 
-from constants import RAW_DATA_FOLDER
+# Constants
+RAW_DATA_FOLDER = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'raw')
 
 # Basketball Classes
 class NBA_Basketball():
