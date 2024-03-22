@@ -1,22 +1,30 @@
 #Imports
 import os
+
 from PyPDF2 import PdfReader
 
+from src.Sports.base import BaseSport
 from constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER
 from constants import ACCEPTABLE_CHARS
 
 # Football Classes
-class NFL_Football():
+class NFL_Football(BaseSport):
     
     def __init__(self):
-        self.online_link = 'https://operations.nfl.com/media/tvglh0mx/2023-rulebook_final.pdf'
-        self.league_name = 'NFL'
-        self.sport_name = 'Football'
-        self.raw_data_path = os.path.join(RAW_DATA_FOLDER, 'nfl_rulebook_2023.pdf')
-        self.processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, f'{self.league_name}_processed.txt')
+        # Call the parent class with these values
+        super().__init__(
+            raw_data_path = os.path.join(RAW_DATA_FOLDER, 'nfl_rulebook_2023.pdf'),
+            processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, 'NFL_processed.txt'),
+            online_link = 'https://operations.nfl.com/media/tvglh0mx/2023-rulebook_final.pdf', 
+            league_name = 'NFL', 
+            sport_name = 'Football'
+        )
         
         
     def load_raw_text(self):
+        """
+        Load the raw data and return it as a string
+        """
         # Instantiate PDF Reader
         pdf_reader = PdfReader(self.raw_data_path)
         

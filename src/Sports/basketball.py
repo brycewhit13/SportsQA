@@ -1,22 +1,30 @@
 # imports
 import os
+
 from PyPDF2 import PdfReader
 
+from src.Sports.base import BaseSport
 from constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER
 from constants import ACCEPTABLE_CHARS
 
 # Basketball Classes
-class NBA_Basketball():
+class NBA_Basketball(BaseSport):
     
     def __init__(self):
-        self.online_link = 'https://ak-static.cms.nba.com/wp-content/uploads/sites/4/2022/10/Official-Playing-Rules-2022-23-NBA-Season.pdf'
-        self.league_name = 'NBA'
-        self.sport_name = 'Basketball'
-        self.raw_data_path = os.path.join(RAW_DATA_FOLDER, 'nba_rulebook_2023.pdf')
-        self.processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, f'{self.league_name}_processed.txt')
-        
+        # Call the parent class with these values
+        super().__init__(
+            raw_data_path = os.path.join(RAW_DATA_FOLDER, 'nba_rulebook_2023.pdf'),
+            processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, 'NBA_processed.txt'),
+            online_link = 'https://ak-static.cms.nba.com/wp-content/uploads/sites/4/2022/10/Official-Playing-Rules-2022-23-NBA-Season.pdf', 
+            league_name = 'NBA', 
+            sport_name = 'Basketball'
+        )
     
-    def load_raw_text(self):   
+    
+    def load_raw_text(self):
+        """
+        Load the raw data and return it as a string
+        """  
         # Instantiate PDF Reader
         pdf_reader = PdfReader(self.raw_data_path)
         
@@ -56,17 +64,23 @@ class NBA_Basketball():
         with open(self.processed_data_path, 'w') as f:
             f.write(processed_text)
 
-class WNBA_Basketball():
+class WNBA_Basketball(BaseSport):
     
     def __init__(self):
-        self.online_link = 'https://cdn.wnba.com/league/2022/05/2022-WNBA-RULE-BOOK-FINAL.pdf'
-        self.league_name = 'WNBA'
-        self.sport_name = 'Basketball'
-        self.raw_data_path = os.path.join(RAW_DATA_FOLDER, 'wnba_rulebook_2022.pdf')
-        self.processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, f'{self.league_name}_processed.txt')
+        # Call the parent class with these values
+        super().__init__(
+            raw_data_path = os.path.join(RAW_DATA_FOLDER, 'wnba_rulebook_2022.pdf'),
+            processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, 'WNBA_processed.txt'),
+            online_link = 'https://cdn.wnba.com/league/2022/05/2022-WNBA-RULE-BOOK-FINAL.pdf', 
+            league_name = 'WNBA', 
+            sport_name = 'Basketball'
+        )        
     
     
     def load_raw_text(self):
+        """
+        Load the raw data and return it as a string
+        """
         # Instantiate PDF Reader
         pdf_reader = PdfReader(self.raw_data_path)
         
