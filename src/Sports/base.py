@@ -15,9 +15,9 @@ class BaseSport():
         """
         Loads the document using the appropriate langchain document loader and returns the result
         """
-        if self.raw_data_path.endswith('.pdf'):
-            return PyPDFLoader(self.raw_data_path).load_and_split()
-        elif self.raw_data_path.endswith('.txt'):
-            return TextLoader(self.raw_data_path).load()
+        if self.processed_data_path.endswith('.pdf'):
+            return PyPDFLoader(self.processed_data_path).load_and_split()
+        elif self.processed_data_path.endswith('.txt'):
+            return TextLoader(self.processed_data_path).load()
         else:
             raise ValueError('Document type not supported')
