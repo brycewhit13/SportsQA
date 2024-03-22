@@ -1,18 +1,22 @@
 # Imports
 import os
 import requests
-from bs4 import BeautifulSoup
 
-from constants import RAW_DATA_FOLDER
+from bs4 import BeautifulSoup
+from langchain_community.document_loaders import TextLoader
+
+from constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER
+from constants import ACCEPTABLE_CHARS
 
 # Ultimate Classes
 class USAU_Ultimate():
     
     def __init__(self):
-        self.raw_data_path = os.path.join(RAW_DATA_FOLDER, 'usau_rulebook_2024.txt')
         self.online_link = 'https://usaultimate.org/rules/'
         self.league_name = 'USAU'
         self.sport_name = 'Ultimate'
+        self.raw_data_path = os.path.join(RAW_DATA_FOLDER, 'usau_rulebook_2024.txt')
+        self.processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, f'{self.league_name}_processed.txt')
         
     
     def load_raw_text(self):
@@ -46,3 +50,32 @@ class USAU_Ultimate():
             with open(self.raw_data_path, 'w') as f:
                 f.write(raw_text)
             return raw_text
+    
+    
+    def process_text(self):
+        # Load the raw text
+        raw_text = self.load_raw_text()
+        
+        # Remove any spots with more than one space
+        processed_text = ' '.join(raw_text.split())
+        
+        # Fix encodings for apostrophe, open/close double quotes, and hypens
+        processed_text = processed_text.replace('’', '\'')
+        processed_text = processed_text.replace('“', '"')
+        processed_text = processed_text.replace('”', '"')
+        processed_text = processed_text.replace('–', '-')
+        processed_text = processed_text.replace('—', '-')
+        processed_text = processed_text.replace('…', '...')
+        
+        # Remove any remaining non-standard characters completely
+        unencoded_characters = set(processed_text).difference(set(ACCEPTABLE_CHARS))
+        for char in unencoded_characters:
+            processed_text = processed_text.replace(char, '')
+        
+        # Save the processed text to be retrieved later
+        with open(self.processed_data_path, 'w') as f:
+            f.write(processed_text)
+    
+    
+    def load_processed_text(self):
+        pass
