@@ -39,11 +39,8 @@ class NBA_Basketball(BaseSport):
         # Load the raw text
         raw_text = self.load_raw_text()
         
-        # Remove any spots with more than one space
-        processed_text = ' '.join(raw_text.split())
-        
         # Fix encodings for apostrophe, open/close double quotes, and hypens
-        processed_text = processed_text.replace('’', '\'')
+        processed_text = raw_text.replace('’', '\'')
         processed_text = processed_text.replace('‘', '\'')
         processed_text = processed_text.replace('“', '"')
         processed_text = processed_text.replace('”', '"')
@@ -58,7 +55,7 @@ class NBA_Basketball(BaseSport):
         # Remove any remaining non-standard characters completely
         unencoded_characters = set(processed_text).difference(set(ACCEPTABLE_CHARS))
         for char in unencoded_characters:
-            processed_text = processed_text.replace(char, '')
+            processed_text = processed_text.replace(char, ' ')
         
         # Save the processed text to be retrieved later
         with open(self.processed_data_path, 'w') as f:
@@ -95,11 +92,8 @@ class WNBA_Basketball(BaseSport):
         # Load the raw text
         raw_text = self.load_raw_text()
         
-        # Remove any spots with more than one space
-        processed_text = ' '.join(raw_text.split())
-        
         # Fix encodings for apostrophe, open/close double quotes, and hypens
-        processed_text = processed_text.replace('’', '\'')
+        processed_text = raw_text.replace('’', '\'')
         processed_text = processed_text.replace('‘', '\'')
         processed_text = processed_text.replace('“', '"')
         processed_text = processed_text.replace('”', '"')
@@ -109,7 +103,7 @@ class WNBA_Basketball(BaseSport):
         # Remove any remaining non-standard characters completely
         unencoded_characters = set(processed_text).difference(set(ACCEPTABLE_CHARS))
         for char in unencoded_characters:
-            processed_text = processed_text.replace(char, '')
+            processed_text = processed_text.replace(char, ' ')
         
         # Save the processed text to be retrieved later
         with open(self.processed_data_path, 'w') as f:

@@ -130,4 +130,4 @@ dmypy.json
 
 # Ignore test files
 *test.py
-data/processed
+data

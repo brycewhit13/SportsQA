@@ -21,3 +21,8 @@ class BaseSport():
             return TextLoader(self.processed_data_path).load()
         else:
             raise ValueError('Document type not supported')
+    
+    
+    def load_processed_text(self):
+        with open(self.processed_data_path, 'r') as f:
+            return f.read()
