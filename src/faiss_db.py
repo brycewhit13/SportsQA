@@ -6,7 +6,7 @@ from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
 from src.Sports import Sports
-from constants import FAISS_DB_FOLDER, EMBEDDING_MODEL_NAME
+from src.constants import FAISS_DB_FOLDER, EMBEDDING_MODEL_NAME
 
 def embed_single_document(sport: Sports):
     # Load the document for the sport
