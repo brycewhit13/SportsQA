@@ -5,8 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 
 from src.Sports.base import BaseSport
-from constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER
-from constants import ACCEPTABLE_CHARS
+from src.constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER
+from src.constants import ACCEPTABLE_CHARS
 
 # Ultimate Classes
 class USAU_Ultimate(BaseSport):

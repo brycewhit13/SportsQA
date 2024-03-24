@@ -4,8 +4,8 @@ import os
 from PyPDF2 import PdfReader
 
 from src.Sports.base import BaseSport
-from constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER
-from constants import ACCEPTABLE_CHARS
+from src.constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER
+from src.constants import ACCEPTABLE_CHARS
 
 # Football Classes
 class NFL_Football(BaseSport):
