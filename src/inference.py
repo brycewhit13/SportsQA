@@ -7,7 +7,7 @@ from langchain.memory import ConversationBufferMemory
 
 from src.Sports import Sports
 from src.faiss_db import load_faiss_db, query_faiss_db
-from constants import LLM_MODEL_NAME, PROMPT_TEMPLATE
+from src.constants import LLM_MODEL_NAME, PROMPT_TEMPLATE
 
 def timer_func(func): 
     def wrap_func(*args, **kwargs): 
