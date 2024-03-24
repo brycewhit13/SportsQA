@@ -11,3 +11,19 @@ ACCEPTABLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567
 
 # FAISS DB
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
+
+# LLM
+LLM_MODEL_NAME = 'mistralai/Mistral-7B-Instruct-v0.2'
+PROMPT_TEMPLATE = \
+'''
+[INST]
+Here is some important context which can help answer the question asked by the user.
+Make sure to not make anything up to answer the question if it is not provided in the context.
+
+<context>
+{context}
+</context>
+
+User Question: {question}
+[/INST]
+'''

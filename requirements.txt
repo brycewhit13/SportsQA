@@ -6,4 +6,5 @@ PyPDF2==3.0.1
 requests==2.31.0
 sentence-transformers==2.6.0
 streamlit==1.32.2
+transformers==4.39.1
 -e .

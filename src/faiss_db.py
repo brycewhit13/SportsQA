@@ -33,18 +33,10 @@ def embed_all_documents():
 def load_faiss_db(sport: Sports):
     # Get info needed to load the db and then return the loaded db
     sport_obj = sport.value
-    print(sport_obj.league_name)
     embedding_model = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME)
     return FAISS.load_local(os.path.join(FAISS_DB_FOLDER, f'faiss_index_{sport_obj.league_name}'), embedding_model, allow_dangerous_deserialization=True)
 
 
-def query_faiss_db(query: str, sport: Sports):
-    db = load_faiss_db(sport=sport)
-    docs = db.similarity_search(query)
-    print(docs)
-    
-
-
-if __name__ == '__main__':
-    embed_all_documents()
-    query_faiss_db('What is a travel', Sports.NBA)
+def query_faiss_db(db, query: str, k: int = 3):
+    retriever = db.as_retriever(search_type="similarity", search_kwargs={'k': k})
+    return retriever.invoke(query)
