@@ -89,4 +89,4 @@ def context_required(sport: Sports, query: str, chat_history: list):
     elif 'NO' in response.content.split()[0]:
         return False
     else:
-        raise ValueError("Asking if context is required yielded an invalid result")
+        return False  # Return false if it is unclear
