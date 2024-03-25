@@ -13,7 +13,7 @@ class NBA_Basketball(BaseSport):
     def __init__(self):
         # Call the parent class with these values
         super().__init__(
-            raw_data_path = os.path.join(RAW_DATA_FOLDER, 'nba_rulebook_2023.pdf'),
+            raw_data_path = os.path.join(RAW_DATA_FOLDER, 'nba_rulebook_2023_2024.pdf'),
             processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, 'NBA_processed.txt'),
             online_link = 'https://ak-static.cms.nba.com/wp-content/uploads/sites/4/2022/10/Official-Playing-Rules-2022-23-NBA-Season.pdf', 
             league_name = 'NBA', 

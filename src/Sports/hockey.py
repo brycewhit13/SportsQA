@@ -13,7 +13,7 @@ class NHL_Hockey(BaseSport):
     def __init__(self):
         # Call the parent class with these values
         super().__init__(
-            raw_data_path = os.path.join(RAW_DATA_FOLDER, 'nhl_rulebook_2023.pdf'),
+            raw_data_path = os.path.join(RAW_DATA_FOLDER, 'nhl_rulebook_2023_2024.pdf'),
             processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, 'NHL_processed.txt'),
             online_link = 'https://media.nhl.com/site/asset/public/ext/2023-24/2023-24Rulebook.pdf', 
             league_name = 'NHL', 
