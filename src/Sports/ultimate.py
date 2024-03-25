@@ -56,12 +56,14 @@ class USAU_Ultimate(BaseSport):
         # Get the main rules
         main_rules = soup.find(name='ol', attrs={'class':'main-rules'}).find_all(name='li')
         for section in main_rules:
-            raw_text += section.text
+            if section.text not in raw_text:
+                raw_text += section.text
             
         # Get the appendices
         appendices = soup.find(name='ol', attrs={'class':'appendices'}).find_all(name='li')
         for section in appendices:
-            raw_text += section.text
+           if section.text not in raw_text:
+                raw_text += section.text
         
         return raw_text
     
