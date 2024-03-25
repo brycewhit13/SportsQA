@@ -41,7 +41,7 @@ def main():
     st.markdown(f'Check out the [Offical {sport_enum.value.league_name} Rulebook]({sport_enum.value.online_link})')
     
     # Create the chat message box and introduce ourself
-    st.chat_message('assistant').write("""Welcome, I am SportBot and I am here to answer any questions you may have about the official rules of different sports. 
+    st.chat_message('assistant').write("""Welcome, I am here to answer any questions you may have about the official rules of different sports. 
                             Select a sport and corresponding league from the drop-down menus above and then feel free to ask me anything!""")
     
     # Initialize chat history
