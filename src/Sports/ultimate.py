@@ -18,7 +18,7 @@ class USAU_Ultimate(BaseSport):
             processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, 'USAU_processed.txt'),
             online_link = 'https://usaultimate.org/rules/', 
             league_name = 'USAU', 
-            sport_name = 'Ultimate'
+            sport_name = 'Ultimate Frisbee'
         )
     
     
