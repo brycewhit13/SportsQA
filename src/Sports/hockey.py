@@ -2,9 +2,13 @@
 import os
 
 from PyPDF2 import PdfReader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_mistralai import MistralAIEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.document_loaders import TextLoader
 
 from src.Sports.base import BaseSport
-from src.constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER
+from src.constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER, FAISS_DB_FOLDER
 from src.constants import ACCEPTABLE_CHARS
 
 # Hockey Classes
@@ -60,3 +64,19 @@ class NHL_Hockey(BaseSport):
         # Save the processed text to be retrieved later
         with open(self.processed_data_path, 'w') as f:
             f.write(processed_text)
+    
+    
+    def embed_document(self):
+        # Load the raw text with the document loader
+        docs = TextLoader(self.processed_data_path).load()
+        
+        # Chunk the text for the FAISS db
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=250)
+        chunked_docs = text_splitter.split_documents(docs)
+        
+        # Initialize the embedding model
+        embedding_model = MistralAIEmbeddings(mistral_api_key=os.environ['MISTRAL_API_KEY'])
+        
+        # Create and save the FAISS db
+        db = FAISS.from_documents(chunked_docs, embedding_model)
+        db.save_local(os.path.join(FAISS_DB_FOLDER, f'faiss_index_{self.league_name}'))

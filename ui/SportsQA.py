@@ -2,7 +2,7 @@
 import streamlit as st
 
 from src.Sports import Sports
-from src.faiss_db import load_faiss_db, query_faiss_db
+from src.faiss_db import load_faiss_db, query_faiss_db, query_faiss_with_rerank
 from src.inference import construct_prompt, invoke_llm, stream_llm, context_required
 
 # Constants
@@ -63,7 +63,7 @@ def main():
         if context_required(sport=sport_enum, query=question, chat_history=st.session_state.messages):
             # Load the appropriate FAISS db
             db = load_faiss_db(sport=sport_enum)
-            context_list = query_faiss_db(db, query=question)
+            context_list = query_faiss_with_rerank(db, query=question)
         else:
             context_list = None
         
