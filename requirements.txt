@@ -1,5 +1,6 @@
 beautifulsoup4==4.12.2
 faiss_cpu==1.7.4
+flashrank==0.2.0
 langchain==0.1.13
 langchain-mistralai==0.0.5
 langchain_experimental==0.0.55
