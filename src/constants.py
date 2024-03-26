@@ -5,6 +5,7 @@ import os
 RAW_DATA_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'data', 'raw')
 PROCESSED_DATA_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'data', 'processed')
 FAISS_DB_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'data', 'faiss')
+MODEL_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'models')
 
 # Text Processing
 ACCEPTABLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,./<>?~"\'\n '
