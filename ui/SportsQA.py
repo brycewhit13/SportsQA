@@ -11,6 +11,9 @@ SPORT_LEAGUE_MAPPING = {
     'Basketball': ['NBA', 'WNBA'],
     'Hockey': ['NHL'],
     'Ultimate Frisbee': ['USAU'],
+    'Baseball': ['MLB'],
+    'Soccer': ['MLS', 'FIFA'],
+    'Golf': ['PGA']
 }
 
 LEAGUE_TO_ENUM_MAPPING = {
@@ -19,6 +22,10 @@ LEAGUE_TO_ENUM_MAPPING = {
     'WNBA': Sports.WNBA,
     'NHL': Sports.NHL,
     'USAU': Sports.USAU,
+    'MLB': Sports.MLB,
+    'MLS': Sports.MLS,
+    'FIFA': Sports.FIFA,
+    'PGA': Sports.PGA
 }
 
 def clear_chat_history():
@@ -32,7 +39,7 @@ def main():
     # Create two dropdowns side by side: One to select the sport and one to select the league
     col1, col2 = st.columns(2)
     with col1:
-        sport = st.selectbox('Select a sport', ['🏈 Football', '🏀 Basketball', '🏒 Hockey', '🥏 Ultimate Frisbee'], on_change=clear_chat_history)
+        sport = st.selectbox('Select a sport', ['⚾ Baseball', '🏀 Basketball', '🏈 Football', '⛳ Golf', '🏒 Hockey', '⚽ Soccer', '🥏 Ultimate Frisbee'], on_change=clear_chat_history)
     with col2:
         league = st.selectbox('Select a league', SPORT_LEAGUE_MAPPING[' '.join(sport.split(' ')[1:])], on_change=clear_chat_history)
     
