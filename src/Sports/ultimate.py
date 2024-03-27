@@ -2,12 +2,8 @@
 import os
 import requests
 
+from PyPDF2 import PdfReader
 from bs4 import BeautifulSoup
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_mistralai import MistralAIEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain_community.document_loaders import TextLoader
-
 
 from src.Sports.base import BaseSport
 from src.constants import RAW_DATA_FOLDER, PROCESSED_DATA_FOLDER, FAISS_DB_FOLDER
@@ -93,19 +89,52 @@ class USAU_Ultimate(BaseSport):
         # Save the processed text to be retrieved later
         with open(self.processed_data_path, 'w') as f:
             f.write(processed_text)
-    
-    
-    def embed_document(self):
-        # Load the raw text with the document loader
-        docs = TextLoader(self.processed_data_path).load()
+
+
+class WFDF_Ultimate(BaseSport):
+    def __init__(self):
+        # Call the parent class with these values
+        super().__init__(
+            raw_data_path = os.path.join(RAW_DATA_FOLDER, 'WFDF_rulebook_2024.pdf'),
+            processed_data_path = os.path.join(PROCESSED_DATA_FOLDER, 'WFDF_processed.txt'),
+            online_link = 'https://rules.wfdf.sport/wp-content/uploads/2022/01/WFDF-Rules-of-Ultimate-2021-2024-1.pdf', 
+            league_name = 'WFDF', 
+            sport_name = 'Ultimate Frisbee'
+        )
+
+    def load_raw_text(self):
+        """
+        Load the raw data and return it as a string
+        """
+        # Instantiate PDF Reader
+        pdf_reader = PdfReader(self.raw_data_path)
         
-        # Chunk the text for the FAISS db
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=250)
-        chunked_docs = text_splitter.split_documents(docs)
+        # Extract Text
+        raw_text = ''
+        for page in pdf_reader.pages:
+            raw_text += page.extract_text()
+        return raw_text
+
+
+    def process_text(self):
+        # Load the raw text
+        raw_text = self.load_raw_text()
         
-        # Initialize the embedding model
-        embedding_model = MistralAIEmbeddings(mistral_api_key=os.environ['MISTRAL_API_KEY'])
+        # Fix encodings for apostrophe, open/close double quotes, and hypens
+        processed_text = raw_text.replace('’', '\'')
+        processed_text = processed_text.replace('‘', '\'')
+        processed_text = processed_text.replace('“', '"')
+        processed_text = processed_text.replace('”', '"')
+        processed_text = processed_text.replace('–', '-')
+        processed_text = processed_text.replace('—', '-')
+        processed_text = processed_text.replace('…', '...')
+        processed_text = processed_text.replace('⁄', '/')
         
-        # Create and save the FAISS db
-        db = FAISS.from_documents(chunked_docs, embedding_model)
-        db.save_local(os.path.join(FAISS_DB_FOLDER, f'faiss_index_{self.league_name}'))
+        # Remove any remaining non-standard characters completely
+        unencoded_characters = set(processed_text).difference(set(ACCEPTABLE_CHARS))
+        for char in unencoded_characters:
+            processed_text = processed_text.replace(char, '')
+        
+        # Save the processed text to be retrieved later
+        with open(self.processed_data_path, 'w') as f:
+            f.write(processed_text)

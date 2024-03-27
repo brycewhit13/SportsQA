@@ -10,7 +10,7 @@ SPORT_LEAGUE_MAPPING = {
     'Football': ['NFL'],
     'Basketball': ['NBA', 'WNBA'],
     'Hockey': ['NHL'],
-    'Ultimate Frisbee': ['USAU'],
+    'Ultimate Frisbee': ['USAU', 'WFDF'],
     'Baseball': ['MLB'],
     'Soccer': ['MLS', 'FIFA'],
     'Golf': ['PGA']
@@ -22,6 +22,7 @@ LEAGUE_TO_ENUM_MAPPING = {
     'WNBA': Sports.WNBA,
     'NHL': Sports.NHL,
     'USAU': Sports.USAU,
+    'WFDF': Sports.WFDF,
     'MLB': Sports.MLB,
     'MLS': Sports.MLS,
     'FIFA': Sports.FIFA,
