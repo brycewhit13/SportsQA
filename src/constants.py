@@ -36,7 +36,9 @@ User Question: {question}
 
 IS_CONTEXT_REQUIRED_PROMPT_TEMPLATE = \
 '''
-Is the following user question asking about the rules of the {league} for the sport of {sport}? There is some chat history to provide more context. Please respond with only 'YES' or 'NO'
+Is the asking a question related to the sport? If the user is asking a question related to the rules of {league} or {sport} in general, please respond with 'YES'. 
+Otherwise if the user is introducing themslves or asking irrelevant questions, please respond 'NO'. Only respond with 'YES' or 'NO', and if you are unsure, respond with 'YES' to be safe.
+There is some chat history to help you make your decision. 
 
 <chat_histroy>
 {chat_history}

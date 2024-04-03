@@ -84,9 +84,9 @@ def context_required(sport: Sports, query: str, chat_history: list):
     prompt = add_conversation_histroy_to_prompt(chat_histroy=chat_history, prompt=prompt)
     response = chat.invoke(prompt)
     
-    if 'YES' in response.content.split()[0]:
+    if 'yes' in response.content.split()[0].lower():
         return True
-    elif 'NO' in response.content.split()[0]:
+    elif 'no' in response.content.split()[0].lower():
         return False
     else:
         return False  # Return false if it is unclear
