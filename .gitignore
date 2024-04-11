@@ -130,5 +130,3 @@ dmypy.json
 
 # Ignore test files
 test.py
-
-# Ignore the models folder
