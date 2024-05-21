@@ -7,9 +7,17 @@ from langchain_community.vectorstores import FAISS
 from langchain.retrievers.document_compressors import FlashrankRerank
 from langchain.retrievers import ContextualCompressionRetriever
 from flashrank import Ranker
+from huggingface_hub import login
+import streamlit as st
 
 from src.Sports import Sports
 from src.constants import FAISS_DB_FOLDER, MODEL_FOLDER, MISTRAL_API_KEY
+
+try:
+    login(token=os.environ['HUGGING_FACE_API_KEY'])
+except:
+    login(token=st.secrets['HUGGING_FACE_API_KEY'])
+
 
 def embed_single_document(sport: Sports):
     # Load the document for the sport
