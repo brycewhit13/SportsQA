@@ -1,5 +1,12 @@
 # Imports
 import os
+import streamlit as st
+
+# API_KEY
+try:
+    MISTRAL_API_KEY = os.environ['MISTRAL_API_KEY']
+except:
+    MISTRAL_API_KEY = st.secrets['MISTRAL_API_KEY']
 
 # Folders
 RAW_DATA_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'data', 'raw')

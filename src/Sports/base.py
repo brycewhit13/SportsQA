@@ -7,7 +7,7 @@ from langchain_mistralai import MistralAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import TextLoader
 
-from src.constants import FAISS_DB_FOLDER
+from src.constants import FAISS_DB_FOLDER, MISTRAL_API_KEY
 
 # Parent sports class
 class BaseSport():
@@ -45,7 +45,7 @@ class BaseSport():
         chunked_docs = text_splitter.split_documents(docs)
         
         # Initialize the embedding model
-        embedding_model = MistralAIEmbeddings(mistral_api_key=os.environ['MISTRAL_API_KEY'])
+        embedding_model = MistralAIEmbeddings(mistral_api_key=MISTRAL_API_KEY)
         
         # Create and save the FAISS db
         db = FAISS.from_documents(chunked_docs, embedding_model)

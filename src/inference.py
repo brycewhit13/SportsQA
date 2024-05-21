@@ -7,10 +7,10 @@ from langchain_mistralai.chat_models import ChatMistralAI
 
 from src.Sports import Sports
 from src.faiss_db import load_faiss_db, query_faiss_db
-from src.constants import PROMPT_TEMPLATE, IS_CONTEXT_REQUIRED_PROMPT_TEMPLATE
+from src.constants import PROMPT_TEMPLATE, IS_CONTEXT_REQUIRED_PROMPT_TEMPLATE, MISTRAL_API_KEY
 
 def initialize_mistral_chat():
-    return ChatMistralAI(mistral_api_key=os.environ['MISTRAL_API_KEY'], model='open-mixtral-8x7b', temperature=0.2, safe_mode=True)
+    return ChatMistralAI(mistral_api_key=MISTRAL_API_KEY, model='open-mixtral-8x7b', temperature=0.2, safe_mode=True)
 
 
 def add_context_to_prompt(context_list, prompt: str):
